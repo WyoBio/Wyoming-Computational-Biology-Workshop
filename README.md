@@ -31,10 +31,19 @@ This is the details section for Bulk RNA-Seq.
 Details for Module 00 go here.
 
 ### Module 01
-Details for Module 01 go here.
+In this module, we will delve into the essentials of reference genome files (.fa), gene annotation files (.gtf), and raw sequence files (.fastq). We'll cover the necessary commands for downloading, understanding, indexing, and performing quality control on these files.
 
 #### Introduction to Inputs
-Details for the introduction to inputs go here.
+- ##### Reference genomes can be downloaded from Ensembl using the following links:
+    - Mouse: [link]
+    - Human: [link]
+- ##### The Annotation files can be downloaded using the following links:
+   - Mouse: [link]
+   - Human: [link]
+- ##### For the sake of time, we are going to perform the analysis using only a single chromosome (chr22) and the ERCC spike-in to make it run faster.
+- ##### The input RNAseq (.fastq file) consists of two commercially available RNA samples:
+   - Universal Human Reference (UHR): Total RNA from 10 diverse cancer cell lines.
+   - Human Brain Reference (HBR): Total RNA from the brains of 23 Caucasians, male and female, of varying ages but mostly 60-80 years old.
 
 #### Reference Genomes
 Details for reference genomes go here.
