@@ -1,7 +1,7 @@
 # Wyoming Computational Biology Workshop
 
 ## Table of Contents
-1. [Bulk RNA-Seq](#bulk-rna-seq)
+1. [Bulk RNA-Seq](#Bulk-RNA-Seq)
 2. [Module 00](#setup)
 3. [Module 01](#inputs)
    - [Introduction to Inputs](#introduction-to-inputs)
@@ -20,7 +20,7 @@
    - [Alignment Visualization - Allele Expression](#alignment-visualization-allele-expression)
    - [Alignment QC](#alignment-qc)
 
-## Bulk RNA-Seq {#bulk-rna-seq}
+## Bulk RNA-Seq {#Bulk-RNA-Seq}
 
 This is the introduction section for Bulk RNA-Seq.
 
