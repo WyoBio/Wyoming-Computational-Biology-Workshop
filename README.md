@@ -20,6 +20,8 @@
    - [Alignment Visualization - Allele Expression](#Alignment-Visualization-Allele-Expression)
    - [Alignment QC](#Alignment-QC)
 
+## Bulk RNA-Seq {#introduction}
+
 
 
 
