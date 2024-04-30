@@ -1,26 +1,29 @@
 # Wyoming Computational Biology Workshop
 
 ## Table of Contents
-1. [Bulk RNA-Seq](#introduction)
-2. [Module 00](#Setup)
-3. [Module 01](#Inputs)
-   - [Introduction to Inputs](#Introduction-to-Inputs)
-   - [Reference Genomes](#Reference-Genomes)
-   - [Annotation](#Annotation)
-   - [Indexing](#Indexing)
-   - [RNAseq Data](#RNAseq-Data)
-   - [Pre-alignment QC](#Pre-alignment-QC)
-4. [Module 02](#Alignments)
-   - [Introduction to Alignment](#Introduction-to-Alignment)
-   - [Adapter Trim](#Adapter-Trim)
-   - [Alignment](#Alignment)
-   - [IGV](#IGV)
-   - [Alignment Visualization - Preparation](#Alignment-Visualization-Preparation)
-   - [Alignment Visualization - IGV](#Alignment-Visualization-IGV)
-   - [Alignment Visualization - Allele Expression](#Alignment-Visualization-Allele-Expression)
-   - [Alignment QC](#Alignment-QC)
+1. [Bulk RNA-Seq](#bulk-rna-seq)
+2. [Module 00](#setup)
+3. [Module 01](#inputs)
+   - [Introduction to Inputs](#introduction-to-inputs)
+   - [Reference Genomes](#reference-genomes)
+   - [Annotation](#annotation)
+   - [Indexing](#indexing)
+   - [RNAseq Data](#rnaseq-data)
+   - [Pre-alignment QC](#pre-alignment-qc)
+4. [Module 02](#alignments)
+   - [Introduction to Alignment](#introduction-to-alignment)
+   - [Adapter Trim](#adapter-trim)
+   - [Alignment](#alignment)
+   - [IGV](#igv)
+   - [Alignment Visualization - Preparation](#alignment-visualization-preparation)
+   - [Alignment Visualization - IGV](#alignment-visualization-igv)
+   - [Alignment Visualization - Allele Expression](#alignment-visualization-allele-expression)
+   - [Alignment QC](#alignment-qc)
 
-## Bulk RNA-Seq {#introduction}
+## Bulk RNA-Seq {#bulk-rna-seq}
+
+This is the introduction section for Bulk RNA-Seq.
+
 
 
 
