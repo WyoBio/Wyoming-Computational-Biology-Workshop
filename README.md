@@ -79,6 +79,13 @@ In this module, we will delve into the essentials of reference genome files (.fa
    - Universal Human Reference (UHR): Total RNA from 10 diverse cancer cell lines.
    - Human Brain Reference (HBR): Total RNA from the brains of 23 Caucasians, male and female, of varying ages but mostly 60-80 years old.
 
+Definitions:
+Reference genome - The nucleotide sequence of the chromosomes of a species. Genes are the functional units of a reference genome and gene annotations describe the structure of transcripts expressed from those gene loci.
+
+Gene annotations - Descriptions of gene/transcript models for a genome. A transcript model consists of the coordinates of the exons of a transcript on a reference genome. Additional information such as the strand the transcript is generated from, gene name, coding portion of the transcript, alternate transcript start sites, and other information may be provided.
+
+GTF (.gtf) file - A common file format referred to as Gene Transfer Format used to store gene and transcript annotation information. You can learn more about this format here: http://genome.ucsc.edu/FAQ/FAQformat#format4
+
 #### Reference Genomes
 ```
 cd $REFERENCE
@@ -100,9 +107,43 @@ head -n 425000 chr22_with_ERCC92.fa | tail
 ```
 What is the count of each base in the entire reference genome file (skipping the header lines for each sequence)?
 
+The Awk approach involves utilizing Awk, an alternative scripting language included in most Linux distributions. This command is conceptually similar to the Perl approach but with a different syntax. A for loop is employed to iterate over each character until the end ("NF") is reached. The counts for each letter are then stored in a simple data structure, and once the end of the file is reached, the results are printed. 
+```
+time cat chr22_with_ERCC92.fa | grep -v ">" | awk '{for (i=1; i<=NF; i++){a[$i]++}}END{for (i in a){print a[i], i}}' FS= - | sort -k 2 | column -t
+```
+The Sed approach involves using Sed, an alternative scripting language. First, the "tr" command is used to remove newline characters. Then, Sed is utilized to split each character onto its own line, effectively creating a file with millions of lines. Afterward, Unix sort and uniq commands are applied to produce counts of each unique character, and sort is used to order the results consistently with the previous approaches.
+```
+time cat chr22_with_ERCC92.fa | grep -v ">" | tr -d '\n' | sed 's/\(.\)/\1\n/g'  - | sort | uniq -c | sort -k 2 | column -t
+```
+The grep approach utilizes the "-o" option of grep to split each match onto a line, which we then use to obtain a count. The "-i" option enables case-insensitive matching, and the "-P" option allows us to use Perl-style regular expressions with grep.
+```
+time cat chr22_with_ERCC92.fa | grep -v ">" | grep -i -o -P "a|c|g|t|y|n" | sort | uniq -c
+```
 #### Annotation
-Details for annotation go here.
+```
+cd $GTF
+echo $GTF
+wget http://genomedata.org/rnaseq-tutorial/annotations/GRCh38/chr22_with_ERCC92.gtf
+```
+Take a look at the contents of the .gtf file. Press q to exit the less display.
+```
+less -p start_codon -S chr22_with_ERCC92.gtf
+```
+Note how the -S option makes it easier to veiw this file with less. Make the formatting a bit nicer still:
+```
+cat chr22_with_ERCC92.gtf | column -t | less -p exon -S
+```
+How many unique gene IDs are in the .gtf file?
+We can also use grep to find this same information.
+```
+cat chr22_with_ERCC92.gtf | grep -w gene | wc -l
+```
+`grep -w gene` is telling grep to do an exact match for the string ‘gene’. This means that it will return lines that are of the feature type `gene`.
 
+Now view the structure of a single transcript in GTF format. Press `q` to exit the `less` display when you are done.
+```
+grep ENST00000342247 $RNA_REF_GTF | less -p "exon\s" -S
+```
 #### Indexing
 Details for indexing go here.
 
