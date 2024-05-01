@@ -62,6 +62,7 @@ export BAM_UP=/project/biocompworkshop/rshukla/BAMFiles_UnPaired
 module load samtools/1.10
 module load hisat2/2.1.0
 module load fastqc/0.11.7
+module load multiqc/1.13
 ```
 
 ### Module 01
@@ -145,13 +146,30 @@ Now view the structure of a single transcript in GTF format. Press `q` to exit t
 grep ENST00000342247 $RNA_REF_GTF | less -p "exon\s" -S
 ```
 #### Indexing
-Details for indexing go here.
-
+```
+cd $GTF
+echo $GTF
+hisat2_extract_splice_sites.py chr22_with_ERCC92.gtf > $INDEX/splicesites.tsv
+hisat2_extract_exons.py chr22_with_ERCC92.gtf > $INDEX/exons.tsv
+hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
+```
 #### RNAseq Data
-Details for RNAseq data go here.
-
+```
+echo $FASTQ
+cd $FASTQ
+wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar
+tar -xvf HBR_UHR_ERCC_ds_5pc.tar
+ls
+zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | head -n 8
+zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | grep -P "^\@HWI" | wc -l
+```
 #### Pre-alignment QC
-Details for pre-alignment QC go here.
+```
+cd $FASTQ
+fastqc -O $FASTQC/ *.fastq.gz
+cd $FASTQC
+multiqc ./
+```
 
 ### Module 02
 Details for Module 02 go here.
