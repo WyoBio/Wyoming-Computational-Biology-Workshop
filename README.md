@@ -172,23 +172,110 @@ multiqc ./
 ```
 
 ### Module 02
-Details for Module 02 go here.
+##### Learning objectives
+- RNA-seq alignment challenges and common questions
+- Alignment strategies
+- HISAT2
+- Introduction to the BAM and BED formats
+- Basic manipulation of BAMs
+- Visualization of RNA-seq alignments in IGV
+- Alignment QC Assessment
+- BAM read counting and determination of variant allele expression status
 
-#### Introduction to Alignment
-Details for the introduction to alignment go here.
-
-#### Adapter Trim
+#### Adapter Trim (Optional)
 Details for adapter trim go here.
 
 #### Alignment
-Details for alignment go here.
+HISAT2 uses a graph-based alignment and has succeeded HISAT and TOPHAT2. The output of this step will be a SAM/BAM file for each data set.
 
-#### IGV
-Details for IGV go here.
+HISAT2 options specified below:
+- `-p 4` tells HISAT2 to use 4 CPUs for bowtie alignments.
+- `–rna-strandness RF` specifies strandness of RNAseq library. We will specify RF since the TruSeq strand-specific library was used to make these libraries. See here for options.
+- `–rg-id $ID` specifies a read group ID that is a unique identifier.
+- `–rg SM:$SAMPLE_NAME` specifies a read group sample name. This together with rg-id will allow you to determine which reads came from which sample in the merged bam later on.
+- `–rg LB:$LIBRARY_NAME` specifies a read group library name. This together with rg-id will allow you to determine which reads came from which library in the merged bam later on.
+- `–rg PL:ILLUMINA` specifies a read group sequencing platform.
+- `–rg PU:$PLATFORM_UNIT` specifies a read group sequencing platform unit. Typically this consists of FLOWCELL-BARCODE.LANE
+- `–dta` Reports alignments tailored for transcript assemblers.
+- `-x /path/to/hisat2/index` The HISAT2 index filename prefix (minus the trailing .X.ht2) built earlier including splice sites and exons.
+- `-1 /path/to/read1.fastq.gz` The read 1 FASTQ file, optionally gzip(.gz) or bzip2(.bz2) compressed.
+- `-2 /path/to/read2.fastq.gz` The read 2 FASTQ file, optionally gzip(.gz) or bzip2(.bz2) compressed.
+- `-S /path/to/output.sam` The output SAM format text file of alignments.
+
+```
+hisat2 -p 4 --rg-id=UHR_Rep1 --rg SM:UHR --rg LB:UHR_Rep1_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep1.sam 
+hisat2 -p 4 --rg-id=UHR_Rep2 --rg SM:UHR --rg LB:UHR_Rep2_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep2.sam 
+hisat2 -p 4 --rg-id=UHR_Rep3 --rg SM:UHR --rg LB:UHR_Rep3_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-CTGACA.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep3.sam 
+
+hisat2 -p 4 --rg-id=HBR_Rep1 --rg SM:HBR --rg LB:HBR_Rep1_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep1.sam 
+hisat2 -p 4 --rg-id=HBR_Rep2 --rg SM:HBR --rg LB:HBR_Rep2_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-GACACT.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep2.sam 
+hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep3.sam 
+```
+SAM to BAM Conversion Convert HISAT2 sam files to bam files and sort by aligned position
+```
+cd $BAM_P
+samtools sort -@ 4 -o UHR_Rep1.bam UHR_Rep1.sam
+samtools sort -@ 4 -o UHR_Rep2.bam UHR_Rep2.sam
+samtools sort -@ 4 -o UHR_Rep3.bam UHR_Rep3.sam
+samtools sort -@ 4 -o HBR_Rep1.bam HBR_Rep1.sam
+samtools sort -@ 4 -o HBR_Rep2.bam HBR_Rep2.sam
+samtools sort -@ 4 -o HBR_Rep3.bam HBR_Rep3.sam
+```
+You can pipe `|` the hisat2 output to samtools to get the .bam file
+
+```
+hisat2 -p 4 --rg-id=UHR_Rep1 --rg SM:UHR --rg LB:UHR_Rep1_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep1.bam 
+hisat2 -p 4 --rg-id=UHR_Rep2 --rg SM:UHR --rg LB:UHR_Rep2_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep2.bam 
+hisat2 -p 4 --rg-id=UHR_Rep3 --rg SM:UHR --rg LB:UHR_Rep3_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-CTGACA.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep3.bam 
+
+hisat2 -p 4 --rg-id=HBR_Rep1 --rg SM:HBR --rg LB:HBR_Rep1_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/HBR_Rep1.bam 
+hisat2 -p 4 --rg-id=HBR_Rep2 --rg SM:HBR --rg LB:HBR_Rep2_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-GACACT.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/HBR_Rep2.bam 
+hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/HBR_Rep3.bam 
+```
+Merge HISAT2 BAM files
+Make a single BAM file combining all UHR data and another for all HBR data. This could be done using picard-tools.
+
+```
+cd $BAM_P
+java -Xmx2g -jar $PICARD MergeSamFiles -OUTPUT UHR.bam -INPUT UHR_Rep1.bam -INPUT UHR_Rep2.bam -INPUT UHR_Rep3.bam
+java -Xmx2g -jar $PICARD MergeSamFiles -OUTPUT HBR.bam -INPUT HBR_Rep1.bam -INPUT HBR_Rep2.bam -INPUT HBR_Rep3.bam
+```
+Count the alignment (BAM) files to make sure all were created successfully (you should have 8 total)
+
+```
+ls -l *.bam | wc -l
+ls -l *.bam
+```
+#### IGV (Optional)
+After this lab, you will be able to:
+
+- Visualize a variety of genomic data
+- Quickly navigate around the genome
+- Visualize read alignments
+- Validate SNP/SNV calls and structural re-arrangements by eye
+
+We will use publicly available Illumina sequence data derived from a 52-year-old Caucasian woman with breast cancer. Specifically, we will utilize sequence read alignments filtered to the region Chromosome 21: 19,000,000-20,000,000. The data is available in the "IGV" folder at the following path: `/project/biocompworkshop/rshukla/IGV`.
+
+File names: 
+- HCC1143.normal.21.19M-20M.bam
+- HCC1143.normal.21.19M-20M.bam.bai
+
+To visualize read alignments, we will use IGV, a popular visualization tool for High-Throughput Sequencing (HTS) data. You can run IGV on your local machine.
 
 #### Alignment Visualization - Preparation
-Details for alignment visualization (preparation) go here.
-
+Before we can view our alignments in the IGV browser, we need to index our BAM files. To do this, we will use samtools index. For convenience, please index all BAM files.
+```
+echo $BAM_P
+cd $BAM_P
+samtools index HBR.bam
+samtools index HBR_Rep1.bam
+samtools index HBR_Rep2.bam
+samtools index HBR_Rep3.bam
+samtools index UHR.bam
+samtools index UHR_Rep1.bam
+samtools index UHR_Rep2.bam
+samtools index UHR_Rep3.bam
+```
 #### Alignment Visualization - IGV 
 Details for alignment visualization
 
