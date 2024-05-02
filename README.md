@@ -276,8 +276,32 @@ samtools index UHR_Rep1.bam
 samtools index UHR_Rep2.bam
 samtools index UHR_Rep3.bam
 ```
-#### Alignment Visualization - IGV 
-Details for alignment visualization
+#### Alignment Visualization - IGV (Optional)
+Download the following files from `/project/biocompworkshop/<YOUR-FOLDER>/BAMFiles_Paired` to your local machine:
+- HBR.bam
+- HBR.bam.bai
+- UHR.bam
+- UHR.bam.bai
+
+Once downloaded, open these files in IGV for visualization.
+
+Explore Gene Locus on chr22
+
+Go to an example gene locus on chr22:
+- e.g. EIF3L, NDUFA6, and RBX1 have nice coverage
+- e.g. SULT4A1 and GTSE1 are differentially expressed. Determine if they are up-regulated or down-regulated in the brain (HBR) compared to cancer cell lines (UHR).
+
+Mouse over some reads and use the read group (RG) flag to determine which replicate the reads come from. Explore other details about each read and its alignment to the reference genome.
+
+Try to find a variant position in the RNAseq data:
+- HINT: DDX17 is a highly expressed gene with several variants in its 3' UTR.
+- Other highly expressed genes to explore are: NUP50, CYB5R3, and EIF3L (all have at least one transcribed variant).
+
+Are these variants previously known (e.g., present in dbSNP)? How should we interpret the allele frequency of each variant, considering that our samples are pooled RNAs from multiple individuals?
+
+Take note of the genomic position of your variant for future reference.
+
+
 
 
 
