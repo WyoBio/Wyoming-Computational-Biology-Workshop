@@ -262,7 +262,7 @@ File names:
 
 To visualize read alignments, we will use IGV, a popular visualization tool for High-Throughput Sequencing (HTS) data. You can run IGV on your local machine.
 
-#### Alignment Visualization - Preparation
+#### Alignment Visualization - Preparation (Optional)
 Before we can view our alignments in the IGV browser, we need to index our BAM files. To do this, we will use samtools index. For convenience, please index all BAM files.
 ```
 echo $BAM_P
@@ -301,6 +301,45 @@ Are these variants previously known (e.g., present in dbSNP)? How should we inte
 
 Take note of the genomic position of your variant for future reference.
 
+#### Alignment QC
+We will use `samtools flagstat` to get a basic summary of an alignment.
+```
+echo $BAM_P
+cd $BAM_P
+mkdir flagstat
+samtools flagstat HBR_Rep1.bam > flagstat/HBR_Rep1.bam.flagstat
+samtools flagstat HBR_Rep2.bam > flagstat/HBR_Rep2.bam.flagstat
+samtools flagstat HBR_Rep3.bam > flagstat/HBR_Rep3.bam.flagstat
+samtools flagstat UHR_Rep1.bam > flagstat/UHR_Rep1.bam.flagstat
+samtools flagstat UHR_Rep2.bam > flagstat/UHR_Rep2.bam.flagstat
+samtools flagstat UHR_Rep3.bam > flagstat/UHR_Rep3.bam.flagstat
+```
+View an example
+```
+cat flagstat/UHR_Rep1.bam.flagstat
+```
+We can also utilize FastQC to conduct basic quality control (QC) of your BAM file (refer to Pre-alignment QC above). This will provide output similar to when you ran FastQC on your fastq files.
+
+```
+echo $BAM_P
+cd $BAM_P
+fastqc UHR_Rep1.bam UHR_Rep2.bam UHR_Rep3.bam HBR_Rep1.bam HBR_Rep2.bam HBR_Rep3.bam
+mkdir fastqc
+mv *fastqc.html fastqc/
+mv *fastqc.zip fastqc/
+```
+We can use Picard to generate RNA-seq specific quality metrics and figures.
+First, we can generate the necessary input files for picard.
+
+echo $$REFERENCE
+cd $REFERENCE
+
+We will first create a .dict file for our reference
+java -jar $PICARD CreateSequenceDictionary -R chr22_with_ERCC92.fa -O chr22_with_ERCC92.dict
+
+echo $GTF
+cd $GTF
+grep --color=none -i -P "rrna|rrp7a" chr22_with_ERCC92.gtf > ref_ribosome.gtf
 
 
 
