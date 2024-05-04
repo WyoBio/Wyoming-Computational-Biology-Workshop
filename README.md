@@ -341,6 +341,16 @@ echo $GTF
 cd $GTF
 grep --color=none -i -P "rrna|rrp7a" chr22_with_ERCC92.gtf > ref_ribosome.gtf
 
+### Module 03 (Performed in R)
+##### Learning objectives 
+- Expression estimation for known genes and transcripts
+- Differential expression methods
+- Downstream interpretation of expression and differential estimates
+
+##### Preparation 
+- Login to your southpass account with ARCC using this link: https://southpass.arcc.uwyo.edu/pun/sys/dashboard  
+- Click on Beartooth Xfce Desktop. This will take you to resource request form. 
+- 
 
 
 
