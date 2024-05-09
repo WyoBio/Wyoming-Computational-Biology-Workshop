@@ -349,7 +349,8 @@ grep --color=none -i -P "rrna|rrp7a" chr22_with_ERCC92.gtf > ref_ribosome.gtf
 
 ##### Preparation 
 - Login to your southpass account with ARCC using this link: https://southpass.arcc.uwyo.edu/pun/sys/dashboard  
-- Click on Beartooth Xfce Desktop. This will take you to resource request form. 
+- Click on Beartooth Xfce Desktop. This will take you to resource request form.
+- 
 - 
 
 
