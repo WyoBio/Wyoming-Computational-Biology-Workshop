@@ -329,17 +329,29 @@ mv *fastqc.html fastqc/
 mv *fastqc.zip fastqc/
 ```
 We can use Picard to generate RNA-seq specific quality metrics and figures.
-First, we can generate the necessary input files for picard.
-
-echo $$REFERENCE
+```
+# First, we can generate the necessary input files for picard.
+echo $REFERENCE
 cd $REFERENCE
 
-We will first create a .dict file for our reference
+# We will first create a .dict file for our reference
 java -jar $PICARD CreateSequenceDictionary -R chr22_with_ERCC92.fa -O chr22_with_ERCC92.dict
 
 echo $GTF
 cd $GTF
-grep --color=none -i -P "rrna|rrp7a" chr22_with_ERCC92.gtf > ref_ribosome.gtf
+grep --color=none -i -P "rrna|rrp7a" $GTF/chr22_with_ERCC92.gtf > ref_ribosome.gtf
+gff2bed < ref_ribosome.gtf > ref_ribosome.bed
+java -jar $PICARD BedToIntervalList -I ref_ribosome.bed -O ref_ribosome.interval_list -SD chr22_with_ERCC92.dict
+
+gtfToGenePred -genePredExt chr22_with_ERCC92.gtf chr22_with_ERCC92.ref_flat.txt
+
+cat chr22_with_ERCC92.ref_flat.txt | awk '{print $12"\t"$0}' | cut -d$'\t' -f1-11 > tmp.txt
+mv tmp.txt chr22_with_ERCC92.ref_flat.txt
+
+cd $BAM_P
+mkdir picard
+find *Rep*.bam -exec echo java -jar $PICARD CollectRnaSeqMetrics I={} O=picard/{}.RNA_Metrics REF_FLAT=$GTF/chr22_with_ERCC92.ref_flat.txt STRAND=SECOND_READ_TRANSCRIPTION_STRAND RIBOSOMAL_INTERVALS=$REFERENCE/ref_ribosome.interval_list \; | sh
+```
 
 ### Module 03 (Performed in R)
 ##### Learning objectives 
