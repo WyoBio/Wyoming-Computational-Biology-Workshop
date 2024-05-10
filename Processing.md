@@ -368,7 +368,12 @@ featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o Counts/featurecounts.txt $BAM_
 
 we will get two files: `featurecounts.txt` & `featurecounts.txt.summary`
 
+cat featurecounts.txt | less
 
+use `q` to come out of the `cat` command.
+
+cat featurecounts.txt | cut -f1,7- | less
+```
 
 
 
