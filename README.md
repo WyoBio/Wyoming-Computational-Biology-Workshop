@@ -352,8 +352,28 @@ cd $BAM_P
 mkdir picard
 find *Rep*.bam -exec echo java -jar $PICARD CollectRnaSeqMetrics I={} O=picard/{}.RNA_Metrics REF_FLAT=$GTF/chr22_with_ERCC92.ref_flat.txt STRAND=SECOND_READ_TRANSCRIPTION_STRAND RIBOSOMAL_INTERVALS=$REFERENCE/ref_ribosome.interval_list \; | sh
 ```
-
 ### Module 03 (Performed in R)
+
+##### Learning objectives 
+- Expression estimation for known genes and transcripts
+```
+module use /project/biocompworkshop/software/modules
+module load subread/2.0.6
+echo $BAM_P
+cd $BAM_P
+
+featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o Counts/featurecounts.txt $BAM_P/*[Rr]ep[123].bam
+
+featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o Counts/featurecounts.txt $BAM_P/*.bam
+
+we will get two files: `featurecounts.txt` & `featurecounts.txt.summary`
+
+
+
+
+
+
+
 ##### Learning objectives 
 - Expression estimation for known genes and transcripts
 - Differential expression methods
