@@ -37,10 +37,8 @@ Example command: `cd <your-folder>`
 ##### Created the following folders (inside your home folder)
 ```
 mkdir BAMFiles_Paired
-mkdir BAMFiles_UnPaired
 mkdir FastQ
 mkdir FastQC
-mkdir Files
 ```
 -   Create a nested folder `mkdir -p Grch38/{Hisat2,fasta,genes}`
 -   `cd Grch38` and you will find three folders named Hisat2, fasta and genes
@@ -55,6 +53,7 @@ export GTF=/project/biocompworkshop/rshukla/Grch38/genes
 export INDEX=/project/biocompworkshop/rshukla/Grch38/Hisat2
 export BAM_P=/project/biocompworkshop/rshukla/BAMFiles_Paired
 export BAM_UP=/project/biocompworkshop/rshukla/BAMFiles_UnPaired
+export COUNTS=/project/biocompworkshop/rshukla/Counts
 ```
 
 ##### Load all modules required for the class
