@@ -145,7 +145,7 @@ cat chr22_with_ERCC92.gtf | grep -w gene | wc -l
 
 Now view the structure of a single transcript in GTF format. Press `q` to exit the `less` display when you are done.
 ```
-grep ENST00000342247 $RNA_REF_GTF | less -p "exon\s" -S
+grep ENST00000342247 $GTF/chr22_with_ERCC92.gtf | less -p "exon\s" -S
 ```
 #### Indexing
 ```
