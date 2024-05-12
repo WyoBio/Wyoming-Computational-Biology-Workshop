@@ -149,8 +149,8 @@ grep ENST00000342247 $GTF/chr22_with_ERCC92.gtf | less -p "exon\s" -S
 ```
 #### Indexing
 ```
-cd $GTF
 echo $GTF
+cd $GTF
 hisat2_extract_splice_sites.py chr22_with_ERCC92.gtf > $INDEX/splicesites.tsv
 hisat2_extract_exons.py chr22_with_ERCC92.gtf > $INDEX/exons.tsv
 hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
