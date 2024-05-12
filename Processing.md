@@ -58,9 +58,11 @@ export COUNTS=/project/biocompworkshop/rshukla/Counts
 
 ##### Load all modules required for the class
 ```
-module load samtools/1.10
-module load hisat2/2.1.0
-module load fastqc/0.11.7
+module load arcc/1.0
+module load gcc/12.2.0
+module load samtools/1.16.1
+module load hisat2/2.2.1
+module load fastqc/0.11.9
 module load multiqc/1.13
 ```
 
