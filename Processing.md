@@ -90,8 +90,9 @@ GTF (.gtf) file - A common file format referred to as Gene Transfer Format used 
 
 #### Reference Genomes
 ```
-cd $REFERENCE
+
 echo $REFERENCE
+cd $REFERENCE
 wget http://genomedata.org/rnaseq-tutorial/fasta/GRCh38/chr22_with_ERCC92.fa
 ls
 ```
@@ -123,8 +124,8 @@ time cat chr22_with_ERCC92.fa | grep -v ">" | grep -i -o -P "a|c|g|t|y|n" | sort
 ```
 #### Annotation
 ```
-cd $GTF
 echo $GTF
+cd $GTF
 wget http://genomedata.org/rnaseq-tutorial/annotations/GRCh38/chr22_with_ERCC92.gtf
 ```
 Take a look at the contents of the .gtf file. Press q to exit the less display.
