@@ -326,9 +326,9 @@ module load subread/2.0.6
 echo $BAM_P
 cd $BAM_P
 
-featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o Counts/featurecounts.txt $BAM_P/*[Rr]ep[123].bam
+featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o $COUNTS/featurecounts.txt $BAM_P/*[Rr]ep[123].bam
 
-featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o Counts/featurecounts.txt $BAM_P/*.bam
+featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o $COUNTS/featurecounts.txt $BAM_P/*.bam
 
 we will get two files: `featurecounts.txt` & `featurecounts.txt.summary`
 
