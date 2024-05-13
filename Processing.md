@@ -67,6 +67,7 @@ module load multiqc/1.13
 module load openjdk/11.0.15_10
 module load picard/2.26.2
 module load bedops/2.4.40
+module load kentutils/1.04.0
 ```
 
 ### Module 01
