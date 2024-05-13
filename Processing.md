@@ -64,6 +64,9 @@ module load samtools/1.16.1
 module load hisat2/2.2.1
 module load fastqc/0.11.9
 module load multiqc/1.13
+module load openjdk/11.0.15_10
+module load picard/2.26.2
+module load bedops/2.4.40
 ```
 
 ### Module 01
@@ -265,6 +268,11 @@ View an example
 ```
 cat flagstat/UHR_Rep1.bam.flagstat
 ```
+We can summarize the `flagstat` results using `mutiqc`
+```
+cd flagstat
+multiqc ./
+```
 We can also utilize FastQC to conduct basic quality control (QC) of your BAM file (refer to Pre-alignment QC above). This will provide output similar to when you ran FastQC on your fastq files.
 
 ```
@@ -274,6 +282,11 @@ fastqc UHR_Rep1.bam UHR_Rep2.bam UHR_Rep3.bam HBR_Rep1.bam HBR_Rep2.bam HBR_Rep3
 mkdir fastqc
 mv *fastqc.html fastqc/
 mv *fastqc.zip fastqc/
+```
+We can summarize the `flagstat` results using `mutiqc`
+```
+cd fastqc
+multiqc ./
 ```
 We can use Picard to generate RNA-seq specific quality metrics and figures.
 ```
