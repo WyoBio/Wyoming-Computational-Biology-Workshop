@@ -302,7 +302,7 @@ echo $GTF
 cd $GTF
 grep --color=none -i -P "rrna|rrp7a" $GTF/chr22_with_ERCC92.gtf > ref_ribosome.gtf
 gff2bed < ref_ribosome.gtf > ref_ribosome.bed
-java -jar $PICARD BedToIntervalList -I ref_ribosome.bed -O ref_ribosome.interval_list -SD chr22_with_ERCC92.dict
+java -jar $PICARD BedToIntervalList -I ref_ribosome.bed -O ref_ribosome.interval_list -SD $REFERENCE/chr22_with_ERCC92.dict
 
 gtfToGenePred -genePredExt chr22_with_ERCC92.gtf chr22_with_ERCC92.ref_flat.txt
 
