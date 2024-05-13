@@ -312,6 +312,9 @@ mv tmp.txt chr22_with_ERCC92.ref_flat.txt
 cd $BAM_P
 mkdir picard
 find *Rep*.bam -exec echo java -jar $PICARD CollectRnaSeqMetrics I={} O=picard/{}.RNA_Metrics REF_FLAT=$GTF/chr22_with_ERCC92.ref_flat.txt STRAND=SECOND_READ_TRANSCRIPTION_STRAND RIBOSOMAL_INTERVALS=$REFERENCE/ref_ribosome.interval_list \; | sh
+
+cd picard
+multiqc ./
 ```
 ### Module 03 (Performed in R)
 
