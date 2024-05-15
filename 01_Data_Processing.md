@@ -1,4 +1,4 @@
-# Wyoming Computational Biology Workshop
+# Data Processing
 
 ## Table of Contents
 1. [Bulk RNA-Seq](#Bulk-RNA-Seq)
