@@ -4,7 +4,15 @@
 1. [Setup](#Setup)
 2. [Load R libraries](#Load-R-libraries-we-will-use-in-this-section)
 3. [Define working directories](#Define-working-dir-paths)
-
+4. [Import RNAseq read counts](#Read-in-the-RNAseq-read-counts-for-each-gene-(produced-by-featurecounts))
+5. [Filter raw counts](#Filter-raw-counts)
+6. [Experimental design](#Specifying-the-experimental-design)
+7. [Construct the DESeq2 object](#Construct-the-DESeq2-object-piecing-all-the-data-together)
+8. [Running DESeq2](#Running-DESeq2)
+9. [Log-fold change shrinkage](#Log-fold-change-shrinkage)
+10. [Annotate gene symbols](#Annotate-gene-symbols-onto-the-DE-results)
+11. [Data filtering](#Data-filtering)
+12. [Save results to files](#Save-results-to-files)    
 
 ---
 
@@ -23,7 +31,7 @@ library(apeglm)
 datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
 outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 ```
-### Set working directory to datadir
+##### Set working directory to datadir
 
 ```R
 setwd(datadir)
@@ -172,7 +180,7 @@ deGeneResult = merge(deGeneResult, original_counts, by='ensemblID', all.x=T)
 head(deGeneResult)
 ```
 
-### Data filitering
+### Data filtering
 After completing the DE analysis, it's valuable to review and refine the data frames, focusing on genes that are relevant. Basic data manipulation techniques are applied to filter for significant genes based on specific thresholds, streamlining the analysis to key insights.
 
 ```R
