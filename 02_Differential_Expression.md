@@ -109,35 +109,58 @@ dds <- DESeq(dds)
 res <- results(dds)
 summary(res)
 ```
+### Log-fold change shrinkage
+Shrinking the log-fold change values is a common practice aimed at minimizing exaggerated differences that arise from genes with low counts, leading to significant variability that may not reflect true biological signals. Take, for instance, a gene observed in two samples: one sample with 1 read and another with 6 reads. This scenario would yield a 6-fold change, which might not accurately represent the underlying biology. Several algorithms exist for shrinking log2 fold change values, and in this case, we'll utilize the apeglm algorithm. Please note that the apeglm package must be installed to implement this approach.
 
+```R
+# shrink the log2 fold change estimates
+# shrinkage of effect size (log fold change estimates) is useful for visualization and ranking of genes
+# In simplistic terms, the goal of calculating "dispersion estimates" and "shrinkage" is also to account for the problem that
+# genes with low mean counts across replicates tend of have higher variability than those with higher mean counts.
+# Shrinkage attempts to correct for this. For a more detailed discussion of shrinkage refer to the DESeq2 vignette
+
+# first get the name of the coefficient (log fold change) to shrink
 resultsNames(dds)
 
+# now apply the shrinkage approach
 resLFC <- lfcShrink(dds, coef="Condition_UHR_vs_HBR", type="apeglm")
 
+# make a copy of the shrinkage results to manipulate
 deGeneResult <- resLFC
 
-summary(res)
-summary(deGeneResult)
-
+#contrast the values for a few genes before and after shrinkage
 head(res)
 head(deGeneResult)
+```
+### Annotate gene symbols onto the DE results
+The initial run of DESeq2 utilized Ensembl gene IDs as identifiers, which can be less intuitive for human interpretation. To enhance the interpretability of results, gene symbols were incorporated into the list of differentially expressed genes, making the outcomes more user-friendly and easier to understand.
 
+##### - ENSG_ID2Name.txt is located in here: 
+
+```R
+# read in gene ID to name mappings (using "fread" an alternative to "read.table")
 mapping <- fread("ENSG_ID2Name.txt", header=F)
 
+# add names to the columns in the "mapping" dataframe
 setnames(mapping, c('ensemblID', 'Symbol'))
 
+# view the first few lines of the gene ID to name mappings
 head(mapping)
 
+# merge on gene names
 deGeneResult$ensemblID <- rownames(deGeneResult)
 deGeneResult <- as.data.table(deGeneResult)
 deGeneResult <- merge(deGeneResult, mapping, by='ensemblID', all.x=T)
 
-
+# merge the original raw count values onto this final dataframe to aid interpretation
 original_counts = as.data.frame(rawdata)
 original_counts[,"ensemblID"] = rownames(rawdata)
 deGeneResult = merge(deGeneResult, original_counts, by='ensemblID', all.x=T)
-head(deGeneResult)
 
+# view the final merged dataframe
+# based on the raw counts and fold change values what does a negative fold change mean with respect to our two conditions HBR and UHR?
+head(deGeneResult)
+```
 
 deGeneResult[order(deGeneResult$padj),]
 
