@@ -11,22 +11,25 @@ library(apeglm)
 datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
 outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 ```
-
-setwd("/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression")
+#### Set working directory to datadir
+```
+setwd(datadir)
+```
+#### read in the RNAseq read counts for each gene (produced by featurecounts)
+```
 rawdata=read.table("featurecounts.txt", header=TRUE, stringsAsFactors=FALSE, row.names=1)
 colnames(rawdata)
-rawdata <- rawdata[,-c(1,2,3,4,5,6,10)]
-# Extract and edit column names
-# Sample column names
+rawdata <- rawdata[,-c(1,2,3,4,5,6,10)] # Remove columns which are not required
+```
+#### Extract and edit column names
+By default, featurecount outputs the sample name as the file name along with the file path. We will modify this to ensure the correct sample names are used.
+```
 column_names <- colnames(rawdata)
-
-# Extract "HBR_RepX" and "UHR_RepX" from column names
-extracted_names <- gsub(".*\\.([A-Z]+)_Rep([0-9]+)\\.bam", "\\1_Rep\\2", column_names)
-
+extracted_names <- gsub(".*\\.([A-Z]+)_Rep([0-9]+)\\.bam", "\\1_Rep\\2", column_names) # Extract "HBR_RepX" and "UHR_RepX" from column names
 colnames(rawdata) <- extracted_names
+dim(rawdata) # Check dimensions
+```
 
-# Check dimensions
-dim(rawdata)
 
 # Require at least 1/6 of samples to have expressed count >= 10
 sample_cutoff <- (1/6)
