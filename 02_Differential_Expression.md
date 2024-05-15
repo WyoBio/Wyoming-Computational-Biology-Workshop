@@ -2,7 +2,7 @@
 
 ## Table of Contents
 1. [Setup](#Setup)
-2. [Load R libraries](#Load R libraries we will use in this section)
+2. [Load R libraries](#Load-R-libraries-we-will-use-in-this-section)
 3. [Module 00](#setup)
 4. [Module 01](#inputs)
    - [Introduction to Inputs](#introduction-to-inputs)
