@@ -1,36 +1,42 @@
 ## Setup
 
-#### Load R libraries we will use in this section
+### Load R libraries we will use in this section
+
 ```R
 library(DESeq2)
 library(data.table)
 library(apeglm)
 ```
-#### Define working dir paths
+### Define working dir paths
+
 ```R
 datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
 outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 ```
-#### Set working directory to datadir
+### Set working directory to datadir
+
 ```R
 setwd(datadir)
 ```
-#### read in the RNAseq read counts for each gene (produced by featurecounts)
+### Read in the RNAseq read counts for each gene (produced by featurecounts)
+
 ```R
 rawdata=read.table("featurecounts.txt", header=TRUE, stringsAsFactors=FALSE, row.names=1)
 colnames(rawdata)
 rawdata <- rawdata[,-c(1,2,3,4,5,6,10)] # Remove columns which are not required
 ```
-#### Extract and edit column names
+### Extract and edit column names
 By default, featurecount outputs the sample name as the file name along with the file path. We will modify this to ensure the correct sample names are used.
+
 ```R
 column_names <- colnames(rawdata)
 extracted_names <- gsub(".*\\.([A-Z]+)_Rep([0-9]+)\\.bam", "\\1_Rep\\2", column_names) # Extract "HBR_RepX" and "UHR_RepX" from column names
 colnames(rawdata) <- extracted_names
 dim(rawdata) # Check dimensions
 ```
-#### Filter raw counts
+### Filter raw counts
 Before running DESeq2 or any differential expression analysis, it's beneficial to pre-filter the data. This process offers computational advantages, such as reducing the memory size of R objects, which in turn speeds up DESeq2's processing. Removing "low-quality" data not only streamlines the statistical tests but also minimizes the need for multiple test corrections, potentially highlighting more significant genes.
+
 ```R
 * # Require at least 1/6 of samples to have expressed count >= 10*
 sample_cutoff <- (1/6)
