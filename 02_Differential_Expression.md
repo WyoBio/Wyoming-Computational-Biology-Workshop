@@ -182,14 +182,15 @@ deGeneResultSorted = deGeneResult[order(deGeneResult$padj),]
 # create a filtered data frame that limits to only the significant DE genes (adjusted p.value < 0.05)
 deGeneResultSignificant = deGeneResultSorted[deGeneResultSorted$padj < 0.05]
 ```
+### Save results to files
+The processed data is exported as tab-separated files. Additionally, certain DESeq2 objects are saved in serialized R (RDS) format, allowing them to be easily reloaded into R for visualization and further analysis at a later time.
 
+```R
+# set the working directory to the output dir where we will store any results files
 setwd(outdir)
 
 # save the final DE result (all genes)  to an output file
 fwrite(deGeneResultSorted, file='DE_all_genes_DESeq2.tsv', sep="\t")
-
-normalizedData <- as.data.table(counts(dds, normalized = TRUE),keep.rownames="Gene_ID")
-fwrite(normalizedData, file = 'gene_tpm_all_samples.tsv', sep = "\t")
 
 # save the final DE result (significant genes only)  to an output file
 fwrite(deGeneResultSignificant, file='DE_sig_genes_DESeq2.tsv', sep="\t")
@@ -198,7 +199,7 @@ fwrite(deGeneResultSignificant, file='DE_sig_genes_DESeq2.tsv', sep="\t")
 saveRDS(dds, 'dds.rds')
 saveRDS(res, 'res.rds')
 saveRDS(resLFC, 'resLFC.rds')
-
+```
 
 
 
