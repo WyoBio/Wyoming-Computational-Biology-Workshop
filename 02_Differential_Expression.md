@@ -95,11 +95,11 @@ dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = metaData, design = 
 ### Running DESeq2
 Now that everything is set up, running DESeq2 initiates several crucial steps:
 
--1. Estimating size factors  
--2. Estimating dispersion  
--3. Implementing "independent filtering" to minimize the number of statistical tests conducted (refer to ?results).    
--4. Fitting Negative Binomial GLM and executing the Wald statistical test.    
--5. Adjusting p-values for multiple testing using the Benjamini and Hochberg method.    
+- Estimating size factors  
+- Estimating dispersion  
+- Implementing "independent filtering" to minimize the number of statistical tests conducted (refer to ?results).    
+- Fitting Negative Binomial GLM and executing the Wald statistical test.    
+- Adjusting p-values for multiple testing using the Benjamini and Hochberg method.    
 
 ```R
 # run the DESeq2 analysis on the "dds" object
