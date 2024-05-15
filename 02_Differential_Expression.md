@@ -162,17 +162,26 @@ deGeneResult = merge(deGeneResult, original_counts, by='ensemblID', all.x=T)
 head(deGeneResult)
 ```
 
+### Data filitering
+After completing the DE analysis, it's valuable to review and refine the data frames, focusing on genes that are relevant. Basic data manipulation techniques are applied to filter for significant genes based on specific thresholds, streamlining the analysis to key insights.
+
+```R
+# view the top genes according to adjusted p-value
 deGeneResult[order(deGeneResult$padj),]
 
+# view the top genes according to fold change
 deGeneResult[order(deGeneResult$log2FoldChange),]
 
+# determine the number of up/down significant genes at FDR < 0.05 significance level
 dim(deGeneResult)[1] # number of genes tested
 dim(deGeneResult[deGeneResult$padj < 0.05])[1] #number of significant genes
 
+# order the DE results by adjusted p-value
 deGeneResultSorted = deGeneResult[order(deGeneResult$padj),]
 
+# create a filtered data frame that limits to only the significant DE genes (adjusted p.value < 0.05)
 deGeneResultSignificant = deGeneResultSorted[deGeneResultSorted$padj < 0.05]
-
+```
 
 setwd(outdir)
 
