@@ -59,7 +59,7 @@ rawdata <- rawdata[keep,]
 
 dim(rawdata) # Check dimensions again to see effect of filtering
 ```
-#### Specifying the experimental design
+### Specifying the experimental design
 DESeq2 relies on a clear understanding of the experimental design, specifically how samples are grouped into different conditions for testing. For this dataset, the experimental design is straightforward: we have six samples representing one condition. This simplicity allows us to construct the experimental design directly within R. However, it's crucial to remember that DESeq2 doesn't verify sample names; it assumes that the column names in our counts matrix precisely match the specified row names in the experimental design.
 
 ```R
@@ -81,8 +81,17 @@ head(metaData)
 # use the "all" function which tests whether an entire logical vector is TRUE
 all(rownames(metaData) == colnames(rawdata))
 ```
+### Construct the DESeq2 object piecing all the data together
+Now that the data is correctly formatted, we can consolidate all necessary information for running differential expression into a single object. This object serves as a container for the input data, intermediate computations, and specifies the condition under examination.
 
+```R
+# make deseq2 data sets
+# here we are setting up our experiment by supplying: (1) the gene counts matrix, (2) the sample/replicate for each column, and (3) the biological conditions we wish to compare.
+# this is a simple example that works for many experiments but these can also get more complex
+# for example, including designs with multiple variables such as "~ group + condition",
+# and designs with interactions such as "~ genotype + treatment + genotype:treatment".
 dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = metaData, design = ~Condition)
+```
 
 dds <- DESeq(dds)
 res <- results(dds)
