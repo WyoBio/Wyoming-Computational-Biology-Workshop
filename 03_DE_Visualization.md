@@ -152,37 +152,63 @@ head(metaData)
 all(rownames(metaData) == colnames(rawdata))
 
 dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = metaData, design = ~Condition)
+
 dds <- estimateSizeFactors(dds)
+
 sizeFactors(dds)
+
 normalized_counts <- counts(dds, normalized=TRUE)
+
 normalized_counts <- as.data.frame(normalized_counts)
+
 gene_expression <- normalized_counts
 ```
+Load other files and the results generated from the previous section.
 
+```R
+setwd(outdir)
+
+# Load gene name mapping file
 gene_names=read.table("ENSG_ID2Name.txt", header=TRUE, stringsAsFactors=FALSE)
 colnames(gene_names)=c("gene_id","gene_name")
 
-setwd(outdir)
-
+# Load DE results from the DESeq2 pipeline
 results_genes <-read.table("DE_all_genes_DESeq2.tsv", sep="\t", header=T, stringsAsFactors = F)
+```
+Let's take a quick look at the imported data to get a sense of its content.
 
+```R
+#### Working with 'dataframes'
+# View the first five rows of data (all columns).
 head(gene_expression)
+
+# View the column names
 colnames(gene_expression)
 
+# View the row names
 row.names(gene_expression)
 
+# Determine the dimensions of the dataframe. 
 dim(gene_expression)
 
+# Get the first 3 rows of data and a selection of columns
 gene_expression[1:3,c(1:3,6)]
 
+# Do the same thing, but using the column names instead of numbers
 gene_expression[1:3, c("HBR_Rep1","HBR_Rep2","HBR_Rep3","UHR_Rep3")]
 
+# Now, exlore the differential expression (DESeq2 results) 
 head(results_genes)
 dim(results_genes)
 
+# Assign some colors for use later.  You can specify color by RGB, Hex code, or name
+# To get a list of color names:
 colours()
 data_colors=c("tomato1","tomato2","tomato3","royalblue1","royalblue2","royalblue3")
+```
+These code blocks generate various plots using the dataset.
 
+### Plot #1
 min_nonzero=1
 
 # Set the columns for finding TPM and create shorter names for figures
