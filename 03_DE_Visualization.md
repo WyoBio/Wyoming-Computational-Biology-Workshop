@@ -67,11 +67,11 @@ rld <- rlog(dds, blind=F)
 # # view the structure of this object
 rld
 
-- Compute sample distances using the `dist` function (defaulting to Euclidean distance metric).
-- Extract the rlog-transformed data using `assay`.
-- Transpose the data using `t`.
-- Calculate distance values using `dist`.
-- The distance is computed for each vector of sample gene values, comparing all samples in a pairwise manner.
+# Compute sample distances using the `dist` function (defaulting to Euclidean distance metric).
+# Extract the rlog-transformed data using `assay`.
+# Transpose the data using `t`.
+# Calculate distance values using `dist`.
+# The distance is computed for each vector of sample gene values, comparing all samples in a pairwise manner.
 
 # view the first few lines of raw data
 head(assay(dds))
@@ -97,14 +97,24 @@ head(sampleDistMatrix)
 # construct clustered heatmap, important to use the computed sample distances for clustering
 pheatmap(sampleDistMatrix, clustering_distance_rows=sampleDists, clustering_distance_cols=sampleDists)
 ```
+We can opt for a similarity metric like Pearson correlation instead of a distance metric. There are various correlation and distance options available:
 
+- Correlation metrics: "pearson", "kendall", "spearman"
+- Distance metrics: "euclidean", "maximum", "manhattan", "canberra", "binary", or "minkowski"
+
+```R
 sampleCorrs <- cor(assay(rld), method="pearson")
 sampleCorrMatrix <- as.matrix(sampleCorrs)
 head(sampleCorrMatrix)
 
 pheatmap(sampleCorrMatrix)
+```
 
+Instead of summarizing all gene count data into a distance metric for each sample, you can gain a similar understanding of the pattern by visualizing all genes simultaneously.
+
+```R
 pheatmap(mat=t(assay(rld)), show_colnames = FALSE)
+```
 
 
 setwd(datadir)
