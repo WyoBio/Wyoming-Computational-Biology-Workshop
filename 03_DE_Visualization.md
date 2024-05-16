@@ -281,21 +281,34 @@ r=cor(gene_expression[i,data_columns], use="pairwise.complete.obs", method="pear
 r
 ```
 
+### Plot #5: Converting Correlation to Distance for Multi-Dimensional Scaling
 
+```R
+# Generate 2D coordinates for plotting points representing each library.
+# Libraries with similar expression patterns, indicated by high correlation, should cluster together.
+# What grouping pattern do we anticipate, considering the library types (technical replicates, biological replicates, tumor/normal)?
 d=1-r
 mds=cmdscale(d, k=2, eig=TRUE)
 par(mfrow=c(1,1))
 plot(mds$points, type="n", xlab="", ylab="", main="MDS distance plot (all non-zero genes)", xlim=c(-0.12,0.12), ylim=c(-0.12,0.12))
 points(mds$points[,1], mds$points[,2], col="grey", cex=2, pch=16)
 text(mds$points[,1], mds$points[,2], short_names, col=data_colors)
+```
 
+### Plot #6: Distribution of differential expression values as a histogram
+
+```R
+# Display only those results that are significant according to DESeq2 (loaded above)
 sig=which(results_genes$pvalue<0.05)
 hist(results_genes[sig,"log2FoldChange"], breaks=50, col="seagreen", xlab="log2(Fold change) UHR vs HBR", main="Distribution of differential expression values")
 abline(v=-2, col="black", lwd=2, lty=2)
 abline(v=2, col="black", lwd=2, lty=2)
 legend("topleft", "Fold-change > 4", lwd=2, lty=2)
+```
 
+### Plot #7: Mean Expression Values Comparison with Significant Differential Expression
 
+```R
 gene_expression[,"HBR_mean"]=apply(gene_expression[,c(1:3)], 1, mean)
 gene_expression[,"UHR_mean"]=apply(gene_expression[,c(4:6)], 1, mean)
 
@@ -307,14 +320,21 @@ xsig=x[sig]
 ysig=y[sig]
 points(x=xsig, y=ysig, col="magenta", pch=16, cex=0.5)
 legend("topleft", "Significant", col="magenta", pch=16)
+
+# Get the gene symbols for the top N (according to corrected p-value) and display them on the plot
+# topn = order(abs(results_genes[sig,"log2FoldChange"]), decreasing=TRUE)[1:25]
 topn = order(results_genes[sig,"padj"])[1:25]
 text(x[topn], y[topn], results_genes[topn,"Symbol"], col="black", cex=0.75, srt=45)
+```
 
+### Plot #8: Heatmap for Expression Differences Across Six Samples
 
+```R
+# Define custom dist and hclust functions for use with heatmaps
 mydist=function(c) {dist(c,method="euclidian")}
 myclust=function(c) {hclust(c,method="average")}
 
-#Create a subset of significant genes with p-value<0.05 and log2 fold-change >= 2
+# Create a subset of significant genes with p-value<0.05 and log2 fold-change >= 2
 sigpi = which(results_genes[,"pvalue"]<0.05)
 sigp = results_genes[sigpi,]
 sigfc = which(abs(sigp[,"log2FoldChange"]) >= 2)
@@ -327,11 +347,17 @@ sigDE_genenames=sigDE[,"Symbol"]
 
 data=log2(as.matrix(gene_expression[as.vector(sigDE_genes),data_columns])+1)
 heatmap.2(data, hclustfun=myclust, distfun=mydist, na.rm = TRUE, scale="none", dendrogram="both", margins=c(10,4), Rowv=TRUE, Colv=TRUE, symbreaks=FALSE, key=TRUE, symkey=FALSE, density.info="none", trace="none", main=main_title, cexRow=0.3, cexCol=1, labRow=sigDE_genenames,col=rev(heat.colors(75)))
+```
 
+### Plot #9: Volcano plot
 
+```R
+# Set differential expression status for each gene - default all genes to "no change"
 results_genes$diffexpressed <- "No"
+
 # if log2Foldchange > 2 and pvalue < 0.05, set as "Up regulated"
 results_genes$diffexpressed[results_genes$log2FoldChange >= 2 & results_genes$pvalue < 0.05] <- "Higher in UHR"
+
 # if log2Foldchange < -2 and pvalue < 0.05, set as "Down regulated"
 results_genes$diffexpressed[results_genes$log2FoldChange <= -2 & results_genes$pvalue < 0.05] <- "Higher in HBR"
 
@@ -349,5 +375,5 @@ ggplot(data=results_genes[results_genes$diffexpressed != "No",], aes(x=log2FoldC
   geom_hline(yintercept=-log10(0.05), col="red") +
   guides(colour = guide_legend(override.aes = list(size=5))) +
   geom_point(data = results_genes[results_genes$diffexpressed == "No",], aes(x=log2FoldChange, y=-log10(pvalue)), colour = "black")
-
+```
 
