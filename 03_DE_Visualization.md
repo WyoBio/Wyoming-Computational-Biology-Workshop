@@ -1,10 +1,13 @@
-Setup
+# Visualization
+### Setup
 We will establish working directories, load the necessary R libraries, and import the DESeqDataSet object and the results table generated in the previous section into the R environment.
 
+```R
+# Set working directories
 datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
 outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 
-# load libs
+# load R libraries
 library(DESeq2)
 library(data.table)
 library(pheatmap)
@@ -12,10 +15,18 @@ library(gplots)
 library(ggplot2)
 library(ggrepel)
 
+# Load in the DESeqDataSet object
 dds <- readRDS('dds.rds')
+
+# Load in the results object before shrinkage
 res <- readRDS('res.rds')
+
+# Load in the results object after shrinkage
 resLFC <- readRDS('resLFC.rds')
+
+# Load in the final results file with all sorted DE results
 deGeneResultSorted <- fread('DE_all_genes_DESeq2.tsv')
+```
 
 plotMA(res, ylim=c(-2, 2))
 plotMA(resLFC, ylim=c(-2,2))
