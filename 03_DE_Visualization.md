@@ -116,11 +116,48 @@ Instead of summarizing all gene count data into a distance metric for each sampl
 pheatmap(mat=t(assay(rld)), show_colnames = FALSE)
 ```
 
+### Additional R Visualization for Differential Expression
+At times, you might want to customize and manipulate expression estimates in R in a more flexible manner. This section covers an in-depth tutorial on visualizing your results in R and conducting "old-school" (non-DESeq2) visualization of your data.
 
+We will begin by generating normalized data from the `dds` object and then proceed with our analysis. Working directly on count data is not feasible because it lacks the appropriate scaling and normalization required for accurate comparisons. The steps for creating the dds object will be reiterated.
+
+```R
 setwd(datadir)
-dir()
+rawdata=read.table("featurecounts.txt", header=TRUE, stringsAsFactors=FALSE, row.names=1)
+colnames(rawdata)
+rawdata <- rawdata[,-c(1,2,3,4,5,6,10)]
+# Extract and edit column names
+# Sample column names
+column_names <- colnames(rawdata)
 
-gene_expression=read.table("gene_tpm_all_samples.tsv", header=TRUE, stringsAsFactors=FALSE, row.names=1)
+# Extract "HBR_RepX" and "UHR_RepX" from column names
+extracted_names <- gsub(".*\\.([A-Z]+)_Rep([0-9]+)\\.bam", "\\1_Rep\\2", column_names)
+
+colnames(rawdata) <- extracted_names
+
+# Check dimensions
+dim(rawdata)
+
+# Check dimensions again to see effect of filtering
+dim(rawdata)
+
+metaData <- data.frame('Condition'=c('UHR', 'UHR', 'UHR', 'HBR', 'HBR', 'HBR'))
+
+metaData$Condition <- factor(metaData$Condition, levels=c('HBR', 'UHR'))
+
+rownames(metaData) <- colnames(rawdata)
+
+head(metaData)
+
+all(rownames(metaData) == colnames(rawdata))
+
+dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = metaData, design = ~Condition)
+dds <- estimateSizeFactors(dds)
+sizeFactors(dds)
+normalized_counts <- counts(dds, normalized=TRUE)
+normalized_counts <- as.data.frame(normalized_counts)
+gene_expression <- normalized_counts
+```
 
 gene_names=read.table("ENSG_ID2Name.txt", header=TRUE, stringsAsFactors=FALSE)
 colnames(gene_names)=c("gene_id","gene_name")
