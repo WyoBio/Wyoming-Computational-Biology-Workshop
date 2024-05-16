@@ -222,23 +222,33 @@ short_names=c("HBR_1","HBR_2","HBR_3","UHR_1","UHR_2","UHR_3")
 boxplot(log2(gene_expression[,data_columns]+min_nonzero), col=data_colors, names=short_names, las=2, ylab="log2(TPM)", main="Distribution of NC for all 6 libraries")
 # Note that the bold horizontal line on each boxplot is the median
 ```
+### Plot #2: Assessing Technical Replicates' Reproducibility
 
+```R
+# Transform the data by adding a small arbitrary value and then converting it to the log2 scale to avoid issues with log2(0).
 x = gene_expression[,"UHR_Rep1"]
 y = gene_expression[,"UHR_Rep2"]
 
-
 plot(x=log2(x+min_nonzero), y=log2(y+min_nonzero), pch=16, col="blue", cex=0.25, xlab="TPM (UHR, Replicate 1)", ylab="TPM (UHR, Replicate 2)", main="Comparison of expression values for a pair of replicates")
 
+# Add a straight line of slope 1, and intercept 0
 abline(a=0,b=1)
 
+# Calculate the correlation coefficient and display in a legend
 rs=cor(x,y)^2
 legend("topleft", paste("R squared = ", round(rs, digits=3), sep=""), lwd=1, col="black")
+```
+### Plot #3: Transforming Scatter Plots into Density Scatter Plots
 
-
+```R
 colors = colorRampPalette(c("white", "blue", "#007FFF", "cyan","#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 smoothScatter(x=log2(x+min_nonzero), y=log2(y+min_nonzero), xlab="TPM (UHR, Replicate 1)", ylab="TPM (UHR, Replicate 2)", main="Comparison of expression values for a pair of replicates", colramp=colors, nbin=200)
+```
 
+### Plot #4: Consolidated Scatter Plots of Replicate Sets
 
+```R
+# Generate an R plot using a function that accepts two libraries for comparison and a plot name as input.
 plotCor = function(lib1, lib2, name){
   x=gene_expression[,lib1]
   y=gene_expression[,lib2]
@@ -251,16 +261,25 @@ plotCor = function(lib1, lib2, name){
   legend("topleft", legend_text, lwd=c(1,NA), col="black", bg="white", cex=0.8)
 }
 
+# Now make a call to our custom function created above, once for each library comparison
 par(mfrow=c(1,3))
 plotCor("UHR_Rep1", "UHR_Rep2", "UHR_1 vs UHR_2")
 plotCor("UHR_Rep2", "UHR_Rep3", "UHR_2 vs UHR_3")
 plotCor("UHR_Rep1", "UHR_Rep3", "UHR_1 vs UHR_3")
 
+#### Compare the correlation between all replicates
+# Is the observed pattern consistent across all eight libraries, with replicates showing the most similarity followed by tumor versus normal samples?
+
+# Calculate the NC sum for all 6 libraries
 gene_expression[,"sum"]=apply(gene_expression[,data_columns], 1, sum)
 
+# Identify genes with a total NC sum of at least 5 - we'll exclude genes with extremely low expression levels.
 i = which(gene_expression[,"sum"] > 5)
+
+# Calculate the correlation between all pairs of data
 r=cor(gene_expression[i,data_columns], use="pairwise.complete.obs", method="pearson")
 r
+```
 
 
 d=1-r
