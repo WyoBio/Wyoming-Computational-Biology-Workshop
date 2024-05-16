@@ -206,16 +206,22 @@ dim(results_genes)
 colours()
 data_colors=c("tomato1","tomato2","tomato3","royalblue1","royalblue2","royalblue3")
 ```
-These code blocks generate various plots using the dataset.
+The following code blocks generate various plots using the dataset.
 
-### Plot #1
+### Plot #1: Visualizing Normalized Count (NC) Value Range and Distribution across 6 Libraries
+
+```R
+# Create boxplots for this purpose
+# Display on a log2 scale and set a minimum non-zero value to avoid log2(0)
 min_nonzero=1
 
 # Set the columns for finding TPM and create shorter names for figures
 data_columns=c(1:6)
 short_names=c("HBR_1","HBR_2","HBR_3","UHR_1","UHR_2","UHR_3")
 
-boxplot(log2(gene_expression[,data_columns]+min_nonzero), col=data_colors, names=short_names, las=2, ylab="log2(TPM)", main="Distribution of TPMs for all 6 libraries")
+boxplot(log2(gene_expression[,data_columns]+min_nonzero), col=data_colors, names=short_names, las=2, ylab="log2(TPM)", main="Distribution of NC for all 6 libraries")
+# Note that the bold horizontal line on each boxplot is the median
+```
 
 x = gene_expression[,"UHR_Rep1"]
 y = gene_expression[,"UHR_Rep2"]
