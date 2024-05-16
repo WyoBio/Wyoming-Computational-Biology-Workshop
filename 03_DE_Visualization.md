@@ -32,7 +32,7 @@ Originally designed for assessing microarray expression data, MA-plots utilize t
 
 To interpret MA-plots effectively, remember that the Y axis (M) represents the log2 fold change between tested conditions, where a larger fold change signifies a more pronounced difference. On the X axis (A), we gauge gene read alignment, with higher positions indicating greater total aligned reads—an indicator of overall gene expression (albeit without considering gene length in raw read counts).
 
-Utilizing DESeq2's built-in plotMA function, genes are color-coded based on significance thresholds. Notably, genes with elevated expression values and larger fold changes more frequently attain significance, aligning with expectations.
+Utilizing DESeq2's built-in `plotMA` function, genes are color-coded based on significance thresholds. Notably, genes with elevated expression values and larger fold changes more frequently attain significance, aligning with expectations.
 
 ```R
 # use DESeq2 built in MA-plot function
@@ -41,36 +41,62 @@ plotMA(res, ylim=c(-2, 2))
 ### MA-plot after LFC shrinkage
 Upon executing DESeq2, we derived two outcomes—one incorporating log-fold change shrinkage and one without. In scenarios with genes registering low hits, we often encounter disproportionately large fold changes. Consider a scenario where one gene has 1 hit compared to another with 6 hits; this results in a 6x fold change. However, this substantial variance likely reflects noise rather than genuine biological signals.
 
-By employing plotMA on our findings post log-fold change shrinkage algorithm implementation, we observe a more controlled depiction of this phenomenon.
+By employing `plotMA` on our findings post log-fold change shrinkage algorithm implementation, we observe a more controlled depiction of this phenomenon.
 
 ```R
 plotMA(resLFC, ylim=c(-2,2))
 ```
 Given the focused nature of our dataset (specifically chr22 genes), the observed effect is quite nuanced. However, a comparison between the two plots reveals subtle shifts, particularly noticeable in the upper left and bottom left corners, where certain fold change values are converging toward 0.
 
+### Inspecting gene counts across conditions
+It's often beneficial to examine the normalized counts for a gene across our samples. DESeq2 offers a convenient built-in function for this purpose, operating on the dds object. Let's take SEPT3, identified as significantly higher in the UHR cohort in our DE analysis. This view allows us to assess the per-sample distribution of our corrected counts, promptly identifying any outliers within each group and facilitating further investigation if necessary.
 
+```R
+# view SEPT3 normalized counts
 plotCounts(dds, gene='ENSG00000100167', intgroup = 'Condition')
+
+# view PRAME normalized counts
 plotCounts(dds, gene='ENSG00000185686', intgroup = 'Condition')
+```
+### Examining pairwise sample clustering
+Examining the relatedness between samples can provide valuable insights into their overall similarity or dissimilarity. Although not included in DESeq2, a convenient library allows for the creation of a hierarchically clustered heatmap from our DESeq2 data. It's important to note that before conducting any distance calculations, the count data should be transformed using `vst()` or `rlog()`, which can be directly applied to the dds object.
 
-
+```R
+# We opt for rlog due to our relatively smaller gene set. For DE experiments with thousands of genes, it's advisable to utilize the vst() function.
 rld <- rlog(dds, blind=F)
-
+# # view the structure of this object
 rld
+
+- Compute sample distances using the `dist` function (defaulting to Euclidean distance metric).
+- Extract the rlog-transformed data using `assay`.
+- Transpose the data using `t`.
+- Calculate distance values using `dist`.
+- The distance is computed for each vector of sample gene values, comparing all samples in a pairwise manner.
+
+# view the first few lines of raw data
 head(assay(dds))
 
+# see the rlog transformed data
 head(assay(rld))
 
+# see the impact of transposing the matrix
 t(assay(rld))[1:6,1:5]
 
+# see the distance values
 dist(t(assay(rld)))
 
+# put it all together and store the result
 sampleDists <- dist(t(assay(rld)))
 
+# convert the distance result to a matrix
 sampleDistMatrix <- as.matrix(sampleDists)
 
+# view the distance numbers directly in the pairwise distance matrix
 head(sampleDistMatrix)
 
+# construct clustered heatmap, important to use the computed sample distances for clustering
 pheatmap(sampleDistMatrix, clustering_distance_rows=sampleDists, clustering_distance_cols=sampleDists)
+```
 
 sampleCorrs <- cor(assay(rld), method="pearson")
 sampleCorrMatrix <- as.matrix(sampleCorrs)
