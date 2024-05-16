@@ -27,9 +27,26 @@ resLFC <- readRDS('resLFC.rds')
 # Load in the final results file with all sorted DE results
 deGeneResultSorted <- fread('DE_all_genes_DESeq2.tsv')
 ```
+### MA-plot before LFC shrinkage
+Originally designed for assessing microarray expression data, MA-plots utilize the log ratio (M) and mean average (A) derived from scanned intensity measurements. Even in RNAseq differential expression (DE) experiments with two conditions, these plots retain their utility. They swiftly reveal the count of significantly differentially expressed genes, the balance between up- and down-regulated genes, and any outliers.
 
+To interpret MA-plots effectively, remember that the Y axis (M) represents the log2 fold change between tested conditions, where a larger fold change signifies a more pronounced difference. On the X axis (A), we gauge gene read alignment, with higher positions indicating greater total aligned reads—an indicator of overall gene expression (albeit without considering gene length in raw read counts).
+
+Utilizing DESeq2's built-in plotMA function, genes are color-coded based on significance thresholds. Notably, genes with elevated expression values and larger fold changes more frequently attain significance, aligning with expectations.
+
+```R
+# use DESeq2 built in MA-plot function
 plotMA(res, ylim=c(-2, 2))
+```
+### MA-plot after LFC shrinkage
+Upon executing DESeq2, we derived two outcomes—one incorporating log-fold change shrinkage and one without. In scenarios with genes registering low hits, we often encounter disproportionately large fold changes. Consider a scenario where one gene has 1 hit compared to another with 6 hits; this results in a 6x fold change. However, this substantial variance likely reflects noise rather than genuine biological signals.
+
+By employing plotMA on our findings post log-fold change shrinkage algorithm implementation, we observe a more controlled depiction of this phenomenon.
+
+```R
 plotMA(resLFC, ylim=c(-2,2))
+```
+Given the focused nature of our dataset (specifically chr22 genes), the observed effect is quite nuanced. However, a comparison between the two plots reveals subtle shifts, particularly noticeable in the upper left and bottom left corners, where certain fold change values are converging toward 0.
 
 
 plotCounts(dds, gene='ENSG00000100167', intgroup = 'Condition')
