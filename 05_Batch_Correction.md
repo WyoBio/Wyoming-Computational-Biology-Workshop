@@ -22,12 +22,14 @@ You can find the data at this location:
 ### Setup
 
 ```R
+# Load R libraries 
 library("sva") 
 library("ggplot2")
 library("gridExtra")
 library("edgeR")
 library("UpSetR")
 
+# Define working directories 
 datadir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection"
 outdir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection/Results"
 
@@ -44,13 +46,14 @@ setwd(outdir)
 # 1, 2, 3, 4 are replicates
 names(uncorrected_data) = c("Gene", "Chr", "UHR_Ribo_1", "UHR_Ribo_2", "UHR_Ribo_3", "UHR_Ribo_4", "HBR_Ribo_1", "HBR_Ribo_2", "HBR_Ribo_3", "HBR_Ribo_4", 
                             "UHR_Poly_1", "UHR_Poly_2", "UHR_Poly_3", "UHR_Poly_4", "HBR_Poly_1", "HBR_Poly_2", "HBR_Poly_3", "HBR_Poly_4")
+
 sample_names = names(uncorrected_data)[3:length(names(uncorrected_data))]
 
-#review data structure
+# Review data structure
 head(uncorrected_data)
 dim(uncorrected_data)
 
-#define conditions, library methods, and replicates
+# Define conditions, library methods, and replicates
 conditions = c("UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR", "UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR")
 library_methods = c("Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly")
 replicates = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)
