@@ -1,37 +1,44 @@
 # Batch Correction
 
 ### Introduction to batch correction
-##### Excerpt from: *ComBat-seq: batch effect adjustment for RNA-seq count data by Yuqing Zhang, Giovanni Parmigiani, and W Evan Johnson*   
+
+Excerpt from: *ComBat-seq: batch effect adjustment for RNA-seq count data by Yuqing Zhang, Giovanni Parmigiani, and W Evan Johnson*   
 
 ***Genomic data are often produced in batches due to logistical or practical restrictions, but technical variation and differences across batches, often called batch effects, can cause significant heterogeneity across batches of data. Batch effects often result in discrepancies in the statistical distributions across data from different technical processing batches, and can have unfavorable impact on downstream biological analysis … Batch effects often cannot be fully addressed by normalization methods and procedures. The differences in the overall expression distribution of each sample across batch may be corrected by normalization methods, such as transforming the raw counts to (logarithms of) CPM, TPM or RPKM/FPKM, the trimmed mean of M values (TMM), or relative log expression (RLE). However, batch effects in composition, i.e. the level of expression of genes scaled by the total expression (coverage) in each sample, cannot be fully corrected with normalization. … While the overall distribution of samples may be normalized to the same level across batches, individual genes may still be affected by batch-level bias.***
 
-
-### Setup
+### Data Overview
 In this section, we will demonstrate the principles and application of batch correction using the ComBat-Seq tool in R (Bioconductor). Although we do not expect batch effects in our test data due to its generation at a single center, at one time, and with consistent methodology, we will use a different dataset that is highly related to showcase the impact of batch correction in this module.
 
 The raw count data we will use is from a publicly available RNA-seq dataset obtained from a comprehensive multi-platform comparison of sequencing platforms. This study also explored the impact of generating data across multiple sites, using polyA vs. ribo-reduction for enrichment, and examining the effects of RNA degradation (PMID: 25150835): "Multi-platform and cross-methodological reproducibility of transcriptome profiling by RNA-seq in the ABRF Next-Generation Sequencing Study."
 
 The UHR (cancer cell lines) and HBR (brain tissue) samples used in this course were also utilized in this publication. To assess a significant batch effect, we will perform a differential expression analysis comparing Ribo-depleted ("Ribo") and polyA-enriched ("Poly") samples in the UHR vs. HBR comparison.
 
+**Important Note: Considerations for Batch Correction**
+
+Batch correction requires representation of each condition of interest in each batch. For instance, if all HBR samples were processed using Riboreduction and all UHR samples with PolyA enrichment, we would be unable to effectively model the batch effect versus the condition effect.
+
 You can find the data at this location:
 
+### Setup
 
-
-
-datadir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection"
-outdir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection/Results"
+```R
 library("sva") 
 library("ggplot2")
 library("gridExtra")
 library("edgeR")
 library("UpSetR")
 
+datadir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection"
+outdir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection/Results"
+
 #load in the uncorrected data as raw counts
 setwd(datadir)
+
 uncorrected_data = read.table("GSE48035_ILMN.Counts.SampleSubset.ProteinCodingGenes.tsv", header=TRUE, sep="\t", as.is=c(1,2))
+
 setwd(outdir)
 
-#simplify the names of the data columns
+# Simplify the names of the data columns
 # (A = Universal Human Reference RNA and B = Human Brain Reference RNA)
 # RNA = polyA enrichment and RIBO = ribosomal RNA depletion
 # 1, 2, 3, 4 are replicates
@@ -47,7 +54,9 @@ dim(uncorrected_data)
 conditions = c("UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR", "UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR")
 library_methods = c("Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly")
 replicates = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)
+```
 
+### Conduct PCA on Uncorrected Counts 
 #calculate principal components for the uncorrected data
 pca_uncorrected_obj = prcomp(uncorrected_data[,sample_names])
 
