@@ -111,6 +111,22 @@ Each of the ComBat-Seq arguments is briefly explained below:
 
 **covar_mod = NULL:** If you have multiple biological conditions of interest, define them using covar_mod (covariates) instead of group. For instance, consider the same experiment as above but with alternating male and female cells for each replicate. You would define a covariate matrix for covar_mod as follows:
 
+```R
+# Treatment_group = c(1,2,1,2,1,2,1,2)
+# Sex_group = c(1,1,2,2,1,1,2,2)
+# Covariate_matrix = cbind(treatment_group, sex_group)
+```
+
+**full_mod = TRUE:** If set to TRUE, include the condition of interest in the model. This is typically recommended as the default setting. We haven't encountered a compelling reason to set this to FALSE.
+
+**shrink = FALSE:** Determines whether to apply shrinkage on parameter estimation.
+
+**shrink.disp = FALSE:** Specifies whether to apply shrinkage on dispersion.
+
+**gene.subset.n = NULL:** Indicates the number of genes to use in empirical Bayes estimation, only applicable when shrink = TRUE.
+
+A detailed discussion of shrinkage (related to the `shrink`, `shrink.disp`, and `gene_subset.n` arguments) is beyond the scope of this tutorial. Briefly, shrinkage refers to a set of methods that attempt to correct for gene-specific variability in the counts observed in RNA-seq datasets. More specifically, it relates to the dispersion parameter of the negative binomial distribution used to model RNA-seq count data that can suffer from overdispersion. The dispersion parameter describes how much variance deviates from the mean. In simple terms, shrinkage methods are an attempt to correct for problematic dispersion. A more detailed discussion of these statistical concepts can be found in the DESeq2 paper. However, for our purposes here, the bottom line is that the ComBat-Seq authors state that “We have shown that applying empirical Bayes shrinkage is not necessary for ComBat-seq because the approach is already sufficiently robust due to the distributional assumption.” So we will leave these arguments at their default FALSE settings.
+
 
 #perform the batch correction
 
