@@ -60,19 +60,30 @@ replicates = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)
 ```
 
 ### Conduct PCA on Uncorrected Counts 
-#calculate principal components for the uncorrected data
+PCA Analysis and Batch Effect Identification
+
+Principal component analysis (PCA) serves as a valuable tool for spotting potential batch effects within your data. The primary strategy involves using PCA to uncover patterns of similarity or difference in expression signatures among your samples and determining if these patterns align with expected biological conditions. The PCA plot can be annotated with biological conditions as well as potential sources of batch effects, such as sequencing source, data generation date, lab technician, library construction kit batches, matrigel batches, mouse litters, software or instrumentation versions, and so on.
+
+PCA is a method for reducing the dimensionality of large datasets, such as thousands of gene expression values across multiple samples. It aims to represent a vast set of variables with a smaller set that captures the essential information from the larger set. While PCA is a versatile exploratory data analysis tool with numerous applications and complexities, the specifics are beyond the scope of this demonstration focusing on batch effect correction.
+
+In the context of this module, PCA allows for visualizing samples as clusters based on their overall gene expression patterns. These clusters, typically visualized in 2D or interactive 3D plots, can aid in interpreting high-level differences between samples and validating expectations regarding similarity between conditions and replicates.
+
+We will conduct PCA analysis both before and after batch correction, labeling samples according to biological condition (UHR vs HBR) and library preparation type (Ribo vs PolyA).
+
+```R
+# Calculate principal components for the uncorrected data
 pca_uncorrected_obj = prcomp(uncorrected_data[,sample_names])
 
-#pull PCA values out of the PCA object
+# Pull PCA values out of the PCA object
 pca_uncorrected = as.data.frame(pca_uncorrected_obj[2]$rotation)
 
-#assign labels to the data frame
+# Assign labels to the data frame
 pca_uncorrected[,"condition"] = conditions
 pca_uncorrected[,"library_method"] = library_methods
 pca_uncorrected[,"replicate"] = replicates
 
-#plot the PCA
-#create a classic 2-dimension PCA plot (first two principal components) with conditions and library methods indicated
+# Plot the PCA
+# Create a classic 2-dimension PCA plot (first two principal components) with conditions and library methods indicated
 cols <- c("UHR" = "#481567FF", "HBR" = "#1F968BFF")
 p1 = ggplot(data=pca_uncorrected, aes(x=PC1, y=PC2, color=condition, shape=library_method))
 p1 = p1 + geom_point(size=3)
@@ -80,7 +91,7 @@ p1 = p1 + stat_ellipse(type="norm", linetype=2)
 p1 = p1 + labs(title="PCA, RNA-seq counts for 16 HBR/UHR and Ribo/PolyA samples (uncorrected data)", color="Condition", shape="Library Method")
 p1 = p1 + scale_colour_manual(values = cols)
 p1
-
+```
 
 
 #perform the batch correction
