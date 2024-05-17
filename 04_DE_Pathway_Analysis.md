@@ -1,1 +1,89 @@
+# Pathway analysis
+### Setup
+In this section, we'll utilize the GAGE (Generally Applicable Gene-set Enrichment tool) tool in R to assess significantly enriched gene sets among those exhibiting significant "up" and "down" regulation in our UHR vs HBR gene expression analysis. The question we aim to answer is: Do genes associated with brain cell types and processes show enrichment among the DE genes with notable expression differences between UHR and HBR samples?
+
+GAGE, a widely used bioconductor tool, conducts gene-set enrichment and pathway analysis regardless of sample sizes, experimental designs, or assay platforms, suitable for microarray and RNAseq datasets. Here, we'll apply GAGE using gene sets from the "Gene Ontology" (GO) and MSigDB databases for pathway analysis.
+
+```R
+# Load R libraries 
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+library(GO.db)
+library(gage)
+```
+- Importing Differential Expression Results for Pathway Analysis
+```
+datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
+setwd(datadir)
+DE_genes <-read.table("DE_sig_genes_DESeq2.tsv", sep="\t", header=T, stringsAsFactors = F)
+```
+
+# Set up go database
+go.hs <- go.gsets(species="human")
+go.bp.gs <- go.hs$go.sets[go.hs$go.subs$BP]
+go.mf.gs <- go.hs$go.sets[go.hs$go.subs$MF]
+go.cc.gs <- go.hs$go.sets[go.hs$go.subs$CC]
+
+c8 <-"http://genomedata.org/rnaseq-tutorial/c8.all.v7.2.entrez.gmt"
+
+all_cell_types <-readList(c8)
+
+DE_genes$entrez <- mapIds(org.Hs.eg.db, keys=DE_genes$ensemblID, column="ENTREZID", keytype="ENSEMBL", multiVals="first")
+
+DE_genes_clean <- DE_genes[!grepl("ERCC", DE_genes$ensemblID),]
+
+ERCC_gene_count <-nrow(DE_genes[grepl("ERCC", DE_genes$ensemblID),])
+ERCC_gene_count
+
+###Deal with genes that we do not have an Entrez ID for 
+missing_ensembl_key<-DE_genes_clean[is.na(DE_genes_clean$entrez),]
+DE_genes_clean <-DE_genes_clean[!DE_genes_clean$ensemblID %in% missing_ensembl_key$ensemblID,]
+
+###Try mapping using a different key
+missing_ensembl_key$entrez <- mapIds(org.Hs.eg.db, keys=missing_ensembl_key$Symbol, column="ENTREZID", keytype="SYMBOL", multiVal='first')
+missing_ensembl_key_update <- missing_ensembl_key[!is.na(missing_ensembl_key$entrez),]
+
+DE_genes_clean <-rbind(DE_genes_clean, missing_ensembl_key_update)
+
+# grab the log fold changes for everything
+De_gene.fc <- DE_genes_clean$log2FoldChange
+
+# set the name for each row to be the Entrez Gene ID
+names(De_gene.fc) <- DE_genes_clean$entrez
+
+#Run GAGE
+#go 
+fc.go.bp.p <- gage(De_gene.fc, gsets = go.bp.gs)
+fc.go.mf.p <- gage(De_gene.fc, gsets = go.mf.gs)
+fc.go.cc.p <- gage(De_gene.fc, gsets = go.cc.gs)
+
+fc.c8.p <- gage(De_gene.fc, gsets =all_cell_types)
+
+
+###Convert to dataframes 
+#Results for testing for GO terms which are up-regulated
+fc.go.bp.p.up <- as.data.frame(fc.go.bp.p$greater)
+fc.go.mf.p.up <- as.data.frame(fc.go.mf.p$greater)
+fc.go.cc.p.up <- as.data.frame(fc.go.cc.p$greater)
+
+#Results for testing for GO terms which are down-regulated
+fc.go.bp.p.down <- as.data.frame(fc.go.bp.p$less)
+fc.go.mf.p.down <- as.data.frame(fc.go.mf.p$less)
+fc.go.cc.p.down <- as.data.frame(fc.go.cc.p$less)
+
+fc.c8.p.up <- as.data.frame(fc.c8.p$greater)
+fc.c8.p.down <- as.data.frame(fc.c8.p$less)
+
+
+#Try doing something like this to find some significant results:
+#View the top 20 significantly up- or down-regulated GO terms from the Cellular Component Ontology
+head(fc.go.cc.p.up[order(fc.go.cc.p.up$p.val),], n=20)
+head(fc.go.cc.p.down[order(fc.go.cc.p.down$p.val),], n=20)
+
+#You can do the same thing with your results from MSigDB
+head(fc.c8.p.up)
+head(fc.c8.p.down)
+
+write.table(fc.go.cc.p.up, "fc.go.cc.p.up.tsv", quote = F, sep = "\t", col.names = T, row.names = T)
+write.table(fc.go.cc.p.down, "fc.go.cc.p.down.tsv", quote = F, sep = "\t", col.names = T, row.names = T)
 
