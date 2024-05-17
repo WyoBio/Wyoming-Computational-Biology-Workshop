@@ -92,6 +92,24 @@ p1 = p1 + labs(title="PCA, RNA-seq counts for 16 HBR/UHR and Ribo/PolyA samples 
 p1 = p1 + scale_colour_manual(values = cols)
 p1
 ```
+### The ComBat-Seq Package for Batch Correction
+The ComBat-Seq package is part of the SVA package, designed for Surrogate Variable Analysis. This collection of methods aims to remove batch effects and unwanted variations in large datasets. ComBat-Seq, a modification of the ComBat method, is specifically tailored for count-based data in bulk RNA-seq datasets.
+
+- Key advantages of ComBat-Seq include:
+-  1. Utilization of a negative binomial regression model, fitting the characteristics of bulk RNA-seq count data.
+-  2. Generation of corrected data retaining the count nature, suitable for various differential expression analysis methods like EdgeR and DESeq2.
+
+ComBat-Seq offers a straightforward interface with default settings for most arguments. Basic documentation for these arguments can be found here: https://github.com/zhangyuqing/ComBat-seq
+
+Each of the ComBat-Seq arguments is briefly explained below:
+
+**counts:** This is your matrix of gene expression read counts (raw counts). Each row represents a gene, each column represents a sample, and each cell contains an integer count indicating the RNA-seq counts observed for that gene/sample combination. In R, ensure that this data is in matrix format (use `as.matrix()` if necessary) before passing it into ComBat-Seq.
+
+**batch:** This is a vector describing the batches you are concerned about. For instance, if you have eight samples where the first four were processed using library kit (A) and the last four using library kit (B), your batch vector would be defined as: `c(1,1,1,1,2,2,2,2)`.
+
+**group = NULL:** This is a vector describing your biological condition of interest. For example, if your experiment compares drug-treated and untreated cells in pairs with 4 biological replicates, your group vector would be: `c(1,2,1,2,1,2,1,2)`.
+
+**covar_mod = NULL:** If you have multiple biological conditions of interest, define them using covar_mod (covariates) instead of group. For instance, consider the same experiment as above but with alternating male and female cells for each replicate. You would define a covariate matrix for covar_mod as follows:
 
 
 #perform the batch correction
