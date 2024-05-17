@@ -12,11 +12,21 @@ library(GO.db)
 library(gage)
 ```
 - Importing Differential Expression Results for Pathway Analysis
-```
+```R
+# Define and set working dir paths
 datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 setwd(datadir)
+
+# Load in the DE results file with only significant genes
 DE_genes <-read.table("DE_sig_genes_DESeq2.tsv", sep="\t", header=T, stringsAsFactors = F)
 ```
+### Preparing Gene Set Databases
+- In order to conduct our pathway analysis effectively, we require a comprehensive list of pathways and their corresponding genes. Numerous databases house collections of genes or gene sets that can help determine the functional relationships among mutated or differentially expressed genes. Some key resources include GO, KEGG, MSigDB, and WikiPathways. For this task, our focus will be on investigating GO and MSigDB.
+
+- The GAGE package offers a real-time querying function for GO called go.gsets(). This function, when provided with a species argument, generates a list of gene sets along with useful metadata for easy subsetting. Understanding GO's three gene ontologies—Biological Process, Molecular Function, and Cellular Component—will be beneficial for our analysis.
+
+- While GAGE lacks a similar tool for exploring MSigDB gene sets, MSigDB conveniently provides a downloadable .gmt file containing all gene sets. This file format can be effortlessly read into GAGE using the readList() function. Upon reviewing MSigDB, you'll find eight distinct gene set collections, each with unique features. For this exercise, we'll utilize the C8 - cell type signature gene sets collection, which comprises gene sets containing cluster markers from single-cell sequencing studies of human tissue.
+
 
 # Set up go database
 go.hs <- go.gsets(species="human")
