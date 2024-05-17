@@ -1,7 +1,8 @@
 # Batch Correction
 
 ### Introduction to batch correction
-- Excerpt from: ComBat-seq: batch effect adjustment for RNA-seq count data by Yuqing Zhang, Giovanni Parmigiani, and W Evan Johnson   
+- Excerpt from: *ComBat-seq: batch effect adjustment for RNA-seq count data by Yuqing Zhang, Giovanni Parmigiani, and W Evan Johnson*   
+
 ***Genomic data are often produced in batches due to logistical or practical restrictions, but technical variation and differences across batches, often called batch effects, can cause significant heterogeneity across batches of data. Batch effects often result in discrepancies in the statistical distributions across data from different technical processing batches, and can have unfavorable impact on downstream biological analysis … Batch effects often cannot be fully addressed by normalization methods and procedures. The differences in the overall expression distribution of each sample across batch may be corrected by normalization methods, such as transforming the raw counts to (logarithms of) CPM, TPM or RPKM/FPKM, the trimmed mean of M values (TMM), or relative log expression (RLE). However, batch effects in composition, i.e. the level of expression of genes scaled by the total expression (coverage) in each sample, cannot be fully corrected with normalization. … While the overall distribution of samples may be normalized to the same level across batches, individual genes may still be affected by batch-level bias.***
 
 
