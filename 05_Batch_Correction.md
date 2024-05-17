@@ -96,8 +96,8 @@ p1
 The ComBat-Seq package is part of the SVA package, designed for Surrogate Variable Analysis. This collection of methods aims to remove batch effects and unwanted variations in large datasets. ComBat-Seq, a modification of the ComBat method, is specifically tailored for count-based data in bulk RNA-seq datasets.
 
 - Key advantages of ComBat-Seq include:
--  1. Utilization of a negative binomial regression model, fitting the characteristics of bulk RNA-seq count data.
--  2. Generation of corrected data retaining the count nature, suitable for various differential expression analysis methods like EdgeR and DESeq2.
+  - 1. Utilization of a negative binomial regression model, fitting the characteristics of bulk RNA-seq count data.
+  - 2. Generation of corrected data retaining the count nature, suitable for various differential expression analysis methods like EdgeR and DESeq2.
 
 ComBat-Seq offers a straightforward interface with default settings for most arguments. Basic documentation for these arguments can be found here: https://github.com/zhangyuqing/ComBat-seq
 
@@ -127,28 +127,27 @@ Each of the ComBat-Seq arguments is briefly explained below:
 
 A detailed discussion of shrinkage (related to the `shrink`, `shrink.disp`, and `gene_subset.n` arguments) is beyond the scope of this tutorial. Briefly, shrinkage refers to a set of methods that attempt to correct for gene-specific variability in the counts observed in RNA-seq datasets. More specifically, it relates to the dispersion parameter of the negative binomial distribution used to model RNA-seq count data that can suffer from overdispersion. The dispersion parameter describes how much variance deviates from the mean. In simple terms, shrinkage methods are an attempt to correct for problematic dispersion. A more detailed discussion of these statistical concepts can be found in the DESeq2 paper. However, for our purposes here, the bottom line is that the ComBat-Seq authors state that “We have shown that applying empirical Bayes shrinkage is not necessary for ComBat-seq because the approach is already sufficiently robust due to the distributional assumption.” So we will leave these arguments at their default FALSE settings.
 
+### Perform the batch correction
 
-#perform the batch correction
-
-#first we need to transform the format of our groups and batches from names (e.g. "UHR", "HBR", etc.) to numbers (e.g. 1, 2, etc.)
-#in the command below "sapply" is used to apply the "switch" command to each element and convert names to numbers as we define
+```R
+# First we need to transform the format of our groups and batches from names (e.g. "UHR", "HBR", etc.) to numbers (e.g. 1, 2, etc.)
+# in the command below "sapply" is used to apply the "switch" command to each element and convert names to numbers as we define
 groups = sapply(as.character(conditions), switch, "UHR" = 1, "HBR" = 2, USE.NAMES = F)
 batches = sapply(as.character(library_methods), switch, "Ribo" = 1, "Poly" = 2, USE.NAMES = F)
 
-#now run ComBat_seq
+# Now run ComBat_seq
 corrected_data = ComBat_seq(counts = as.matrix(uncorrected_data[,sample_names]), batch = batches, group = groups)
 
-#join the gene and chromosome names onto the now corrected counts from ComBat_seq
+# Join the gene and chromosome names onto the now corrected counts from ComBat_seq
 corrected_data = cbind(uncorrected_data[,c("Gene","Chr")], corrected_data)
 
 #compare dimensions of corrected and uncorrected data sets
 dim(uncorrected_data)
 dim(corrected_data)
 
-#visually compare values of corrected and uncorrected data sets
+# Visually compare values of corrected and uncorrected data sets
 head(uncorrected_data)
 head(corrected_data)
-
 
 pca_corrected_obj = prcomp(corrected_data[,sample_names])
 
@@ -170,6 +169,7 @@ p2 = p2 + scale_colour_manual(values = cols)
 p2
 
 grid.arrange(p1, p2, nrow = 2)
+```
 
 
 #perform differential expression analysis on the uncorrected data and batch corrected data sets
