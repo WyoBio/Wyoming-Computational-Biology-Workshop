@@ -141,7 +141,7 @@ corrected_data = ComBat_seq(counts = as.matrix(uncorrected_data[,sample_names]),
 # Join the gene and chromosome names onto the now corrected counts from ComBat_seq
 corrected_data = cbind(uncorrected_data[,c("Gene","Chr")], corrected_data)
 
-#compare dimensions of corrected and uncorrected data sets
+# Compare dimensions of corrected and uncorrected data sets
 dim(uncorrected_data)
 dim(corrected_data)
 
@@ -151,15 +151,15 @@ head(corrected_data)
 
 pca_corrected_obj = prcomp(corrected_data[,sample_names])
 
-#pull PCA values out of the PCA object
+# Pull PCA values out of the PCA object
 pca_corrected = as.data.frame(pca_corrected_obj[2]$rotation)
 
-#assign labels to the data frame
+# Assign labels to the data frame
 pca_corrected[,"condition"] = conditions
 pca_corrected[,"library_method"] = library_methods
 pca_corrected[,"replicate"] = replicates
 
-#as above, create a PCA plot for comparison to the uncorrected data
+# As above, create a PCA plot for comparison to the uncorrected data
 cols <- c("UHR" = "#481567FF", "HBR" = "#1F968BFF")
 p2 = ggplot(data=pca_corrected, aes(x=PC1, y=PC2, color=condition, shape=library_method))
 p2 = p2 + geom_point(size=3)
@@ -170,11 +170,20 @@ p2
 
 grid.arrange(p1, p2, nrow = 2)
 ```
+How does batch correction influence differential gene expression results? We will utilize UpSet plots to explore the overlap of significant DE genes identified in the following comparisons:
 
+- UHR-Ribo vs HBR-Ribo (same library type, 4 vs 4 replicates)
+- UHR-Poly vs HBR-Poly (same library type, 4 vs 4 replicates)
+- UHR-Ribo vs HBR-Poly (different library types, 4 vs 4 replicates)
+- UHR-Poly vs HBR-Ribo (different library types, 4 vs 4 replicates)
+- UHR-Comb vs HBR-Comb (combined library types, 8 vs 8 replicates)
 
-#perform differential expression analysis on the uncorrected data and batch corrected data sets
+These five sets of differential expression analyses will be conducted using both the uncorrected and corrected data sets.
 
-#first define the sets of samples to be compared to each other
+```R
+# Perform differential expression analysis on the uncorrected data and batch corrected data sets
+
+# First define the sets of samples to be compared to each other
 uhr_ribo_samples = c("UHR_Ribo_1", "UHR_Ribo_2", "UHR_Ribo_3", "UHR_Ribo_4")
 uhr_poly_samples = c("UHR_Poly_1", "UHR_Poly_2", "UHR_Poly_3", "UHR_Poly_4")
 hbr_ribo_samples = c("HBR_Ribo_1", "HBR_Ribo_2", "HBR_Ribo_3", "HBR_Ribo_4")
@@ -182,38 +191,38 @@ hbr_poly_samples = c("HBR_Poly_1", "HBR_Poly_2", "HBR_Poly_3", "HBR_Poly_4")
 uhr_samples = c(uhr_ribo_samples, uhr_poly_samples)
 hbr_samples = c(hbr_ribo_samples, hbr_poly_samples)
 
-#create a function that will run edgeR (DE analysis) for a particular pair of sample sets
+# Create a function that will run edgeR (DE analysis) for a particular pair of sample sets
 run_edgeR = function(data, group_a_name, group_a_samples, group_b_samples, group_b_name){
-  #create a list of all samples for this current comparison
+  # Create a list of all samples for this current comparison
   samples_for_comparison = c(group_a_samples, group_b_samples)
   
-  #define the class factor for this pair of sample sets
+  # Define the class factor for this pair of sample sets
   class = factor(c(rep(group_a_name,length(group_a_samples)), rep(group_b_name,length(group_b_samples))))
   
-  #create a simplified data matrix for only these samples
+  # Create a simplified data matrix for only these samples
   rawdata = data[,samples_for_comparison]
   
-  #store gene names for later
+  # Store gene names for later
   genes = rownames(data)
   gene_names = data[,"Gene"]
   
-  #make DGElist object
+  # Make DGElist object
   y = DGEList(counts=rawdata, genes=genes, group=class)
   
-  #perform TMM normalization
+  # Perform TMM normalization
   y <- calcNormFactors(y)
   
-  #estimate dispersion
+  # Estimate dispersion
   y <- estimateCommonDisp(y, verbose=TRUE)
   y <- estimateTagwiseDisp(y)
   
-  #perform the differential expression test
+  # Perform the differential expression test
   et <- exactTest(y)
   
-  #print number of up/down significant genes at FDR = 0.05 significance level and store the DE status in a new variable (de)
+  # Print number of up/down significant genes at FDR = 0.05 significance level and store the DE status in a new variable (de)
   summary(de <- decideTests(et, adjust.method="fdr", p=.05))
   
-  #create a matrix of the DE results
+  # Create a matrix of the DE results
   mat <- cbind(
     genes, 
     gene_names,
@@ -221,10 +230,10 @@ run_edgeR = function(data, group_a_name, group_a_samples, group_b_samples, group
     sprintf('%0.3f', et$table$logFC)
   )
   
-  #create a version of this matrix that is limited to only the *significant* results
+  # Create a version of this matrix that is limited to only the *significant* results
   mat <- mat[as.logical(de),]
   
-  #add name to the columns of the final matrix
+  # Add name to the columns of the final matrix
   colnames(mat) <- c("Gene", "Gene_Name", "Log10_Pvalue", "Log_fold_change")
   
   return(mat)
@@ -236,14 +245,14 @@ uhr_ribo_vs_hbr_poly_uncorrected = run_edgeR(data=uncorrected_data, group_a_name
 uhr_poly_vs_hbr_ribo_uncorrected = run_edgeR(data=uncorrected_data, group_a_name="UHR", group_a_samples=uhr_poly_samples, group_b_name="HBR", group_b_samples=hbr_ribo_samples)
 uhr_vs_hbr_uncorrected = run_edgeR(data=uncorrected_data, group_a_name="UHR", group_a_samples=uhr_samples, group_b_name="HBR", group_b_samples=hbr_samples)
 
-#run the same five comparisons through edgeR using the *batch corrected data*
+# Run the same five comparisons through edgeR using the *batch corrected data*
 uhr_ribo_vs_hbr_ribo_corrected = run_edgeR(data=corrected_data, group_a_name="UHR", group_a_samples=uhr_ribo_samples, group_b_name="HBR", group_b_samples=hbr_ribo_samples)
 uhr_poly_vs_hbr_poly_corrected = run_edgeR(data=corrected_data, group_a_name="UHR", group_a_samples=uhr_poly_samples, group_b_name="HBR", group_b_samples=hbr_poly_samples)
 uhr_ribo_vs_hbr_poly_corrected = run_edgeR(data=corrected_data, group_a_name="UHR", group_a_samples=uhr_ribo_samples, group_b_name="HBR", group_b_samples=hbr_poly_samples)
 uhr_poly_vs_hbr_ribo_corrected = run_edgeR(data=corrected_data, group_a_name="UHR", group_a_samples=uhr_poly_samples, group_b_name="HBR", group_b_samples=hbr_ribo_samples)
 uhr_vs_hbr_corrected = run_edgeR(data=corrected_data, group_a_name="UHR", group_a_samples=uhr_samples, group_b_name="HBR", group_b_samples=hbr_samples)
 
-#how much of a difference does batch correction make when doing the comparison of all UHR vs all HBR samples?
+# How much of a difference does batch correction make when doing the comparison of all UHR vs all HBR samples?
 dim(uhr_vs_hbr_uncorrected)
 dim(uhr_vs_hbr_corrected)
 
@@ -264,5 +273,9 @@ listInput2 = list("4 UHR Ribo vs 4 HBR Ribo" = uhr_ribo_vs_hbr_ribo_corrected[,"
 upset(fromList(listInput2), order.by = "freq", number.angles=45, point.size=3)
 
 write.table(uhr_vs_hbr_corrected, file="DE_genes_uhr_vs_hbr_corrected.tsv", quote=FALSE, row.names=FALSE, sep="\t")
+```
+
+An UpSet plot serves as an alternative to a Venn Diagram, displaying the overlap (intersection) among multiple sets of values. In this instance, we are assessing the intersection of genes identified as significantly differentially expressed (DE) across five distinct comparisons. The connected black circles represent each combination of sets under consideration. The bar graph above each column visualizes the number of shared genes within those sets. For instance, the initial column contains all five black circles, and the corresponding bar indicates the count of genes found in all five DE comparisons conducted.
+
 
 
