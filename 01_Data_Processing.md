@@ -27,7 +27,7 @@
 ### Bulk RNA-Seq
 This is the details section for Bulk RNA-Seq.
 
-### Module 00
+### Setup
 In this module, we will create the directories for storing input and output files. We will also upload all the programs required for analysis.
 
 In the Classroom Folder: `cd /project/biocompworkshop`  
@@ -61,6 +61,7 @@ export COUNTS=/project/biocompworkshop/rshukla/Counts
 Following the creation of path shortcuts, you can now navigate to the FastQ folder (where we will download our raw data) using `cd $FASTQ`, and then return to your home folder using `cd $myHOME`.
 
 ##### Load all modules required for the class
+We will be using several Linux-based tools in this section. You can load these tools using the following commands
 
 ```bash
 module load arcc/1.0
@@ -75,10 +76,9 @@ module load bedops/2.4.40
 module load kentutils/1.04.0
 ```
 
-### Module 01
-In this module, we will delve into the essentials of reference genome files (.fa), gene annotation files (.gtf), and raw sequence files (.fastq). We'll cover the necessary commands for downloading, understanding, indexing, and performing quality control on these files.
-
 #### Introduction to Inputs
+In the lecture, we will delve into the essentials of reference genome files (.fa), gene annotation files (.gtf), and raw sequence files (.fastq). Here we will cover the necessary commands for downloading, understanding, indexing, and performing quality control on these files.
+
 - Reference genomes can be downloaded from Ensembl using the following links:
     - Mouse: [link]
     - Human: [link]
@@ -91,15 +91,16 @@ In this module, we will delve into the essentials of reference genome files (.fa
    - Human Brain Reference (HBR): Total RNA from the brains of 23 Caucasians, male and female, of varying ages but mostly 60-80 years old.
 
 Definitions:
-Reference genome - The nucleotide sequence of the chromosomes of a species. Genes are the functional units of a reference genome and gene annotations describe the structure of transcripts expressed from those gene loci.
+**Reference genome:** The nucleotide sequence of the chromosomes of a species. Genes are the functional units of a reference genome and gene annotations describe the structure of transcripts expressed from those gene loci.
 
-Gene annotations - Descriptions of gene/transcript models for a genome. A transcript model consists of the coordinates of the exons of a transcript on a reference genome. Additional information such as the strand the transcript is generated from, gene name, coding portion of the transcript, alternate transcript start sites, and other information may be provided.
+**Gene annotations:** - Descriptions of gene/transcript models for a genome. A transcript model consists of the coordinates of the exons of a transcript on a reference genome. Additional information such as the strand the transcript is generated from, gene name, coding portion of the transcript, alternate transcript start sites, and other information may be provided.
 
-GTF (.gtf) file - A common file format referred to as Gene Transfer Format used to store gene and transcript annotation information. You can learn more about this format here: http://genome.ucsc.edu/FAQ/FAQformat#format4
+**GTF (.gtf) file:** - A common file format referred to as Gene Transfer Format used to store gene and transcript annotation information. You can learn more about this format [here](http://genome.ucsc.edu/FAQ/FAQformat#format4).
+
 
 #### Reference Genomes
-```
 
+```
 echo $REFERENCE
 cd $REFERENCE
 wget http://genomedata.org/rnaseq-tutorial/fasta/GRCh38/chr22_with_ERCC92.fa
