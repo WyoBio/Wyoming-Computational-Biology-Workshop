@@ -35,7 +35,8 @@ Navigate to the folder with your name; this is your home folder.
 Example command: `cd <your-folder>`
 
 ##### Created the following folders (inside your home folder)
-```
+
+```bash
 mkdir BAMFiles_Paired
 mkdir FastQ
 mkdir FastQC
@@ -46,7 +47,8 @@ mkdir -p Grch38/{Hisat2,fasta,genes}
 -   `ls Grch38` and you will find three folders named Hisat2, fasta and genes
 
 ##### Create path shortcuts 
-```
+
+```bash
 export myHOME=/project/biocompworkshop/rshukla 
 export FASTQ=/project/biocompworkshop/rshukla/FastQ
 export FASTQC=/project/biocompworkshop/rshukla/FastQC
@@ -56,9 +58,11 @@ export INDEX=/project/biocompworkshop/rshukla/Grch38/Hisat2
 export BAM_P=/project/biocompworkshop/rshukla/BAMFiles_Paired
 export COUNTS=/project/biocompworkshop/rshukla/Counts
 ```
+Following the creation of path shortcuts, you can now navigate to the FastQ folder (where we will download our raw data) using `cd $FASTQ`, and then return to your home folder using `cd $myHOME`.
 
 ##### Load all modules required for the class
-```
+
+```bash
 module load arcc/1.0
 module load gcc/12.2.0
 module load samtools/1.16.1
