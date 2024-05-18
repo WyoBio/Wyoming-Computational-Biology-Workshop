@@ -90,7 +90,7 @@ In the lecture, we will delve into the essentials of reference genome files (.fa
    - Universal Human Reference (UHR): Total RNA from 10 diverse cancer cell lines.
    - Human Brain Reference (HBR): Total RNA from the brains of 23 Caucasians, male and female, of varying ages but mostly 60-80 years old.
 
-Definitions:
+Definitions:  
 **Reference genome:** The nucleotide sequence of the chromosomes of a species. Genes are the functional units of a reference genome and gene annotations describe the structure of transcripts expressed from those gene loci.
 
 **Gene annotations:** - Descriptions of gene/transcript models for a genome. A transcript model consists of the coordinates of the exons of a transcript on a reference genome. Additional information such as the strand the transcript is generated from, gene name, coding portion of the transcript, alternate transcript start sites, and other information may be provided.
