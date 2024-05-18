@@ -28,8 +28,8 @@ library(apeglm)
 ### Define working dir paths
 
 ```R
-datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
-outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
+datadir = "/project/biocompworkshop/**rshukla**/Counts"
+outdir = "/project/biocompworkshop/**rshukla**/Counts/DE_Results"
 ```
 ##### Set working directory to datadir
 
