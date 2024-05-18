@@ -100,65 +100,78 @@ Definitions:
 
 #### Reference Genomes
 
-```
+```bash
 echo $REFERENCE
 cd $REFERENCE
 wget http://genomedata.org/rnaseq-tutorial/fasta/GRCh38/chr22_with_ERCC92.fa
 ls
 ```
 View the first 10 lines of this file. Why does it look like this?
-```
+
+```bash
 head chr22_with_ERCC92.fa
 ```
 How many lines and characters are in this file? How long is this chromosome (in bases and Mbp)?
-```
+
+```bash
 wc chr22_with_ERCC92.fa
 ```
 View 10 lines from approximately the middle of this file. What is the significance of the upper and lower case characters?
-```
+
+```bash
 head -n 425000 chr22_with_ERCC92.fa | tail
 ```
 What is the count of each base in the entire reference genome file (skipping the header lines for each sequence)?
 
 The Awk approach involves utilizing Awk, an alternative scripting language included in most Linux distributions. This command is conceptually similar to the Perl approach but with a different syntax. A for loop is employed to iterate over each character until the end ("NF") is reached. The counts for each letter are then stored in a simple data structure, and once the end of the file is reached, the results are printed. 
-```
+
+```bash
 time cat chr22_with_ERCC92.fa | grep -v ">" | awk '{for (i=1; i<=NF; i++){a[$i]++}}END{for (i in a){print a[i], i}}' FS= - | sort -k 2 | column -t
 ```
 The Sed approach involves using Sed, an alternative scripting language. First, the "tr" command is used to remove newline characters. Then, Sed is utilized to split each character onto its own line, effectively creating a file with millions of lines. Afterward, Unix sort and uniq commands are applied to produce counts of each unique character, and sort is used to order the results consistently with the previous approaches.
-```
+
+```bash
 time cat chr22_with_ERCC92.fa | grep -v ">" | tr -d '\n' | sed 's/\(.\)/\1\n/g'  - | sort | uniq -c | sort -k 2 | column -t
 ```
 The grep approach utilizes the "-o" option of grep to split each match onto a line, which we then use to obtain a count. The "-i" option enables case-insensitive matching, and the "-P" option allows us to use Perl-style regular expressions with grep.
-```
+
+```bash
 time cat chr22_with_ERCC92.fa | grep -v ">" | grep -i -o -P "a|c|g|t|y|n" | sort | uniq -c
 ```
 #### Annotation
-```
+
+```bash
 echo $GTF
 cd $GTF
 wget http://genomedata.org/rnaseq-tutorial/annotations/GRCh38/chr22_with_ERCC92.gtf
 ```
 Take a look at the contents of the .gtf file. Press q to exit the less display.
-```
+
+```bash
 less -p start_codon -S chr22_with_ERCC92.gtf
 ```
 Note how the -S option makes it easier to veiw this file with less. Make the formatting a bit nicer still:
-```
+
+```bash
 cat chr22_with_ERCC92.gtf | column -t | less -p exon -S
 ```
 How many unique gene IDs are in the .gtf file?
 We can also use grep to find this same information.
-```
+
+```bash
 cat chr22_with_ERCC92.gtf | grep -w gene | wc -l
 ```
+
 `grep -w gene` is telling grep to do an exact match for the string ‘gene’. This means that it will return lines that are of the feature type `gene`.
 
 Now view the structure of a single transcript in GTF format. Press `q` to exit the `less` display when you are done.
-```
+
+```bash
 grep ENST00000342247 $GTF/chr22_with_ERCC92.gtf | less -p "exon\s" -S
 ```
 #### Indexing
-```
+
+```bash
 echo $GTF
 cd $GTF
 hisat2_extract_splice_sites.py chr22_with_ERCC92.gtf > $INDEX/splicesites.tsv
@@ -166,7 +179,8 @@ hisat2_extract_exons.py chr22_with_ERCC92.gtf > $INDEX/exons.tsv
 hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
 ```
 #### RNAseq Data
-```
+
+```bash
 echo $FASTQ
 cd $FASTQ
 wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar
@@ -176,7 +190,8 @@ zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | head -n 8
 zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | grep -P "^\@HWI" | wc -l
 ```
 #### Pre-alignment QC
-```
+
+```bash
 cd $FASTQ
 fastqc -O $FASTQC/ *.fastq.gz
 cd $FASTQC
@@ -214,7 +229,7 @@ HISAT2 options specified below:
 - `-2 /path/to/read2.fastq.gz` The read 2 FASTQ file, optionally gzip(.gz) or bzip2(.bz2) compressed.
 - `-S /path/to/output.sam` The output SAM format text file of alignments.
 
-```
+```bash
 hisat2 -p 4 --rg-id=UHR_Rep1 --rg SM:UHR --rg LB:UHR_Rep1_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep1.sam 
 hisat2 -p 4 --rg-id=UHR_Rep2 --rg SM:UHR --rg LB:UHR_Rep2_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep2.sam 
 hisat2 -p 4 --rg-id=UHR_Rep3 --rg SM:UHR --rg LB:UHR_Rep3_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-CTGACA.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep3.sam 
@@ -224,7 +239,8 @@ hisat2 -p 4 --rg-id=HBR_Rep2 --rg SM:HBR --rg LB:HBR_Rep2_ERCC-Mix2 --rg PL:ILLU
 hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep3.sam 
 ```
 SAM to BAM Conversion Convert HISAT2 sam files to bam files and sort by aligned position
-```
+
+```bash
 cd $BAM_P
 samtools sort -@ 4 -o UHR_Rep1.bam UHR_Rep1.sam
 samtools sort -@ 4 -o UHR_Rep2.bam UHR_Rep2.sam
@@ -235,7 +251,7 @@ samtools sort -@ 4 -o HBR_Rep3.bam HBR_Rep3.sam
 ```
 You can pipe `|` the hisat2 output to samtools to get the .bam file
 
-```
+```bash
 hisat2 -p 4 --rg-id=UHR_Rep1 --rg SM:UHR --rg LB:UHR_Rep1_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep1.bam 
 hisat2 -p 4 --rg-id=UHR_Rep2 --rg SM:UHR --rg LB:UHR_Rep2_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-TGACAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep2.bam 
 hisat2 -p 4 --rg-id=UHR_Rep3 --rg SM:UHR --rg LB:UHR_Rep3_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-CTGACA.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/UHR_Rep3.bam 
@@ -247,20 +263,21 @@ hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLU
 Merge HISAT2 BAM files
 Make a single BAM file combining all UHR data and another for all HBR data. This could be done using picard-tools.
 
-```
+```bash
 cd $BAM_P
 java -Xmx2g -jar $PICARD MergeSamFiles -OUTPUT UHR.bam -INPUT UHR_Rep1.bam -INPUT UHR_Rep2.bam -INPUT UHR_Rep3.bam
 java -Xmx2g -jar $PICARD MergeSamFiles -OUTPUT HBR.bam -INPUT HBR_Rep1.bam -INPUT HBR_Rep2.bam -INPUT HBR_Rep3.bam
 ```
 Count the alignment (BAM) files to make sure all were created successfully (you should have 8 total)
 
-```
+```bash
 ls -l *.bam | wc -l
 ls -l *.bam
 ```
 #### Alignment QC
 We will use `samtools flagstat` to get a basic summary of an alignment.
-```
+
+```bash
 echo $BAM_P
 cd $BAM_P
 mkdir flagstat
@@ -272,17 +289,19 @@ samtools flagstat UHR_Rep2.bam > flagstat/UHR_Rep2.bam.flagstat
 samtools flagstat UHR_Rep3.bam > flagstat/UHR_Rep3.bam.flagstat
 ```
 View an example
-```
+
+```bash
 cat flagstat/UHR_Rep1.bam.flagstat
 ```
 We can summarize the `flagstat` results using `mutiqc`
-```
+
+```bash
 cd flagstat
 multiqc ./
 ```
 We can also utilize FastQC to conduct basic quality control (QC) of your BAM file (refer to Pre-alignment QC above). This will provide output similar to when you ran FastQC on your fastq files.
 
-```
+```bash
 echo $BAM_P
 cd $BAM_P
 fastqc UHR_Rep1.bam UHR_Rep2.bam UHR_Rep3.bam HBR_Rep1.bam HBR_Rep2.bam HBR_Rep3.bam
@@ -291,12 +310,14 @@ mv *fastqc.html fastqc/
 mv *fastqc.zip fastqc/
 ```
 We can summarize the `flagstat` results using `mutiqc`
-```
+
+```bash
 cd fastqc
 multiqc ./
 ```
 We can use Picard to generate RNA-seq specific quality metrics and figures.
-```
+
+```bash
 # First, we can generate the necessary input files for picard.
 echo $REFERENCE
 cd $REFERENCE
@@ -326,7 +347,8 @@ multiqc ./
 
 ##### Learning objectives 
 - Expression estimation for known genes and transcripts
-```
+
+```bash
 module use /project/biocompworkshop/software/modules
 module load subread/2.0.6
 echo $BAM_P
@@ -335,8 +357,13 @@ cd $BAM_P
 featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o $COUNTS/featurecounts.txt $BAM_P/*[Rr]ep[123].bam
 
 featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o $COUNTS/featurecounts.txt $BAM_P/*.bam
+```
 
 we will get two files: `featurecounts.txt` & `featurecounts.txt.summary`
+
+```bash
+echo $COUNTS
+cd $COUNTS
 
 cat featurecounts.txt | less
 
@@ -344,10 +371,6 @@ use `q` to come out of the `cat` command.
 
 cat featurecounts.txt | cut -f1,7- | less
 ```
-
-
-
-
 
 ##### Learning objectives 
 - Expression estimation for known genes and transcripts
