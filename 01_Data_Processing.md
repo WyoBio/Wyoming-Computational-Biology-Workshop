@@ -40,8 +40,9 @@ mkdir BAMFiles_Paired
 mkdir FastQ
 mkdir FastQC
 mkdir Counts
+mkdir -p Grch38/{Hisat2,fasta,genes}
 ```
--   Create a nested folder `mkdir -p Grch38/{Hisat2,fasta,genes}`
+-   The command `mkdir -p Grch38/{Hisat2,fasta,genes}` creates a nested folder
 -   `cd Grch38` and you will find three folders named Hisat2, fasta and genes
 
 ##### Create path shortcuts 
