@@ -39,6 +39,7 @@ Example command: `cd <your-folder>`
 mkdir BAMFiles_Paired
 mkdir FastQ
 mkdir FastQC
+mkdir Counts
 ```
 -   Create a nested folder `mkdir -p Grch38/{Hisat2,fasta,genes}`
 -   `cd Grch38` and you will find three folders named Hisat2, fasta and genes
@@ -52,7 +53,6 @@ export REFERENCE=/project/biocompworkshop/rshukla/Grch38/fasta
 export GTF=/project/biocompworkshop/rshukla/Grch38/genes
 export INDEX=/project/biocompworkshop/rshukla/Grch38/Hisat2
 export BAM_P=/project/biocompworkshop/rshukla/BAMFiles_Paired
-export BAM_UP=/project/biocompworkshop/rshukla/BAMFiles_UnPaired
 export COUNTS=/project/biocompworkshop/rshukla/Counts
 ```
 
