@@ -56,7 +56,7 @@ dim(rawdata) # Check dimensions
 Before running DESeq2 or any differential expression analysis, it's beneficial to pre-filter the data. This process offers computational advantages, such as reducing the memory size of R objects, which in turn speeds up DESeq2's processing. Removing "low-quality" data not only streamlines the statistical tests but also minimizes the need for multiple test corrections, potentially highlighting more significant genes.
 
 ```R
-* # Require at least 1/6 of samples to have expressed count >= 10*
+# Require at least 1/6 of samples to have expressed count >= 10*
 sample_cutoff <- (1/6)
 count_cutoff <- 10
 
