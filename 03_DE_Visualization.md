@@ -4,7 +4,7 @@ We will establish working directories, load the necessary R libraries, and impor
 
 ```R
 # Set working directories
-datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression"
+datadir = "/project/biocompworkshop/rshukla/DE_Results"
 outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
 
 # load R libraries
