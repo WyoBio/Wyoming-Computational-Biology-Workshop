@@ -6,6 +6,7 @@ We will establish working directories, load the necessary R libraries, and impor
 # Set working directories
 datadir = "/project/biocompworkshop/rshukla/DE_Results"
 countdir = "/project/biocompworkshop/rshukla/Counts"
+datavault ="/project/biocompworkshop/Data_Vault"
 
 # load R libraries
 library(DESeq2)
@@ -168,7 +169,7 @@ gene_expression <- normalized_counts
 Load other files and the results generated from the previous section.
 
 ```R
-setwd(outdir)
+setwd(datavault)
 
 # Load gene name mapping file
 gene_names=read.table("ENSG_ID2Name.txt", header=TRUE, stringsAsFactors=FALSE)
