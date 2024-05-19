@@ -15,6 +15,8 @@ library(gplots)
 library(ggplot2)
 library(ggrepel)
 
+setwd(datadir)
+
 # Load in the DESeqDataSet object
 dds <- readRDS('dds.rds')
 
