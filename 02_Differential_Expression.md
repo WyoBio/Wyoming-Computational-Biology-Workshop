@@ -157,7 +157,7 @@ The initial run of DESeq2 utilized Ensembl gene IDs as identifiers, which can be
 
 ```R
 # read in gene ID to name mappings (using "fread" an alternative to "read.table")
-mapping <- fread("ENSG_ID2Name.txt", header=F)
+mapping <- fread("/project/biocompworkshop/Data_Vault/ENSG_ID2Name.txt", header=F)
 
 # add names to the columns in the "mapping" dataframe
 setnames(mapping, c('ensemblID', 'Symbol'))
