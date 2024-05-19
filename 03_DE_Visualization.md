@@ -5,7 +5,7 @@ We will establish working directories, load the necessary R libraries, and impor
 ```R
 # Set working directories
 datadir = "/project/biocompworkshop/rshukla/DE_Results"
-outdir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
+countdir = "/project/biocompworkshop/rshukla/Counts"
 
 # load R libraries
 library(DESeq2)
@@ -124,7 +124,7 @@ At times, you might want to customize and manipulate expression estimates in R i
 We will begin by generating normalized data from the `dds` object and then proceed with our analysis. Working directly on count data is not feasible because it lacks the appropriate scaling and normalization required for accurate comparisons. The steps for creating the dds object will be reiterated.
 
 ```R
-setwd(datadir)
+setwd(countdir)
 rawdata=read.table("featurecounts.txt", header=TRUE, stringsAsFactors=FALSE, row.names=1)
 colnames(rawdata)
 rawdata <- rawdata[,-c(1,2,3,4,5,6,10)]
