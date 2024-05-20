@@ -15,6 +15,8 @@ library(gage)
 ```R
 # Define and set working dir paths
 datadir = "/project/biocompworkshop/rshukla/DE_Results"
+outdir = "/project/biocompworkshop/rshukla/Pathway_Results"
+
 setwd(datadir)
 
 # Load in the DE results file with only significant genes
@@ -139,6 +141,7 @@ head(fc.c8.p.down)
 Now, let's transition away from R and delve deeper into exploring our results locally. For the rest of the exercise, our focus will be on the results obtained from GO analysis. We'll utilize an online tool to visualize the interrelationships among the GO terms we uncovered.
 
 ```R
+setwd(outdir)
 write.table(fc.go.cc.p.up, "fc.go.cc.p.up.tsv", quote = F, sep = "\t", col.names = T, row.names = T)
 write.table(fc.go.cc.p.down, "fc.go.cc.p.down.tsv", quote = F, sep = "\t", col.names = T, row.names = T)
 ```
