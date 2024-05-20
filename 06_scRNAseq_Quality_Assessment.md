@@ -300,6 +300,64 @@ for (sample in sample_names) {
   
 }
 ```
+### Combine the Samples
+Now that we've evaluated quality at the sample level, we can merge all samples into a single Seurat object. The `Merge` function will handle this task and append the sample name to cell barcodes if there are duplicates across samples.
+
+```R
+sample_names <- c("Rep1_ICBdT", "Rep1_ICB", "Rep3_ICBdT", "Rep3_ICB",
+                  "Rep5_ICBdT", "Rep5_ICB")
+
+merged <- merge(x = sample.data[["Rep1_ICBdT"]], y = c(sample.data[["Rep1_ICB"]], sample.data[["Rep3_ICBdT"]], sample.data[["Rep3_ICB"]], sample.data[["Rep5_ICBdT"]], sample.data[["Rep5_ICB"]]), add.cell.ids = sample_names)  
+```
+### Data Filtering 
+Next, let's apply the previously determined cutoffs to filter out merged objects.
+
+```R
+unfiltered_merged <- merged # save a copy of unfiltered merge for later
+merged <- subset(merged, nFeature_RNA > 1000 & percent.mt <= 12) 
+merged
+```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 0 variable features)
+ 6 layers present: counts.Rep1_ICBdT, counts.Rep1_ICB, counts.Rep3_ICBdT, counts.Rep3_ICB, counts.Rep5_ICBdT, counts.Rep5_ICB
+```
+Currently, the different replicates exist in separate layers. To proceed with analysis, they must be merged into a single layer.
+
+```R
+merged <- JoinLayers(merged)
+merged
+```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 0 variable features)
+ 1 layer present: counts
+```
+We can utilize `Idents` to confirm that all cells are present in our merged object.
+
+```R
+Idents(merged) # View cell identities
+
+table(Idents(merged)) # get summary table
+```
+### Data Normalization
+It's standard practice in scRNA data analysis to normalize counts. Numerous functions exclusively operate on normalized counts, ignoring raw counts. The `NormalizeData` function, applied to our merged object, log normalizes our RNA assay. Here, log normalization entails dividing the feature counts by each cell's total counts, multiplying by the scale factor, and then natural-log transforming using log1p.
+
+```R
+merged <- NormalizeData(merged, assay = "RNA", normalization.method = "LogNormalize", scale.factor = 10000)
+
+merged
+```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 0 variable features)
+ 2 layers present: counts, data
+```
+
+
 
 
 
