@@ -229,6 +229,90 @@ for (sample in sample_names) {
   
 }
 ```
+### Exclude Cells of Poor Quality Based on QC Plots
+Suppose we opt to retain cells with gene counts exceeding 1000 and mitochondrial percentages below 12.
+
+We'll designate cells we want to retain using the `ifelse` function. This statement reads: if `percent.mt` is less than or equal to 12, it will be marked as TRUE to keep it; otherwise, it will be marked as FALSE to filter it out.
+
+```R
+Rep1_ICB_data_seurat_obj[["keep_cell_percent.mt"]] = ifelse(Rep1_ICB_data_seurat_obj[["percent.mt"]] <= 12, TRUE, FALSE)
+
+head(Rep1_ICB_data_seurat_obj[[]])
+```
+```
+                   orig.ident nCount_RNA nFeature_RNA percent.mt keep_cell_percent.mt
+AAACCTGAGCGGATCA-1   Rep1_ICB       5679         1758   2.341962                 TRUE
+AAACCTGCAAGAGGCT-1   Rep1_ICB       1397          496  50.894775                FALSE
+AAACCTGCATACTCTT-1   Rep1_ICB       8463         2444   2.197802                 TRUE
+AAACCTGCATCATCCC-1   Rep1_ICB       4640         1721   3.750000                 TRUE
+AAACCTGGTTCGGGCT-1   Rep1_ICB       3810         1291   2.755906                 TRUE
+AAACCTGTCAGTCCCT-1   Rep1_ICB       7810         2079   3.354673                 TRUE
+```
+
+We'll apply the same process for the number of genes.
+
+```R
+Rep1_ICB_data_seurat_obj[["keep_cell_nFeature"]] = ifelse(Rep1_ICB_data_seurat_obj[["nFeature_RNA"]] > 1000, TRUE, FALSE)
+
+head(Rep1_ICB_data_seurat_obj[[]])
+```
+```
+                   orig.ident nCount_RNA nFeature_RNA percent.mt keep_cell_percent.mt keep_cell_nFeature
+AAACCTGAGCGGATCA-1   Rep1_ICB       5679         1758   2.341962                 TRUE               TRUE
+AAACCTGCAAGAGGCT-1   Rep1_ICB       1397          496  50.894775                FALSE              FALSE
+AAACCTGCATACTCTT-1   Rep1_ICB       8463         2444   2.197802                 TRUE               TRUE
+AAACCTGCATCATCCC-1   Rep1_ICB       4640         1721   3.750000                 TRUE               TRUE
+AAACCTGGTTCGGGCT-1   Rep1_ICB       3810         1291   2.755906                 TRUE               TRUE
+AAACCTGTCAGTCCCT-1   Rep1_ICB       7810         2079   3.354673                 TRUE               TRUE
+```
+Generate this column across all samples:
+
+```R
+for (sample in sample_names) {
+  sample.data[[sample]][["keep_cell_percent.mt"]] = ifelse(sample.data[[sample]][["percent.mt"]] <= 12, TRUE, FALSE)
+  sample.data[[sample]][["keep_cell_nFeature"]] = ifelse(sample.data[[sample]][["nFeature_RNA"]] > 1000, TRUE, FALSE)
+
+}
+```
+
+Now, let's check the cell count post-filtering:
+
+```R
+for (sample in sample_names) {
+  print(sample)
+  print(sum(sample.data[[sample]][["keep_cell_nFeature"]] & sample.data[[sample]][["keep_cell_percent.mt"]]))
+}
+```
+
+### Cell Count After Filtering
+We'll utilize the `subset` function to observe the distribution of our data post-filtering.
+
+```R
+for (sample in sample_names) {
+  print(sample)
+  
+  p1 <- VlnPlot(subset(sample.data[[sample]], nFeature_RNA > 1000 & percent.mt <= 12), features = c("nCount_RNA"), pt.size = 0) 
+  p2 <- VlnPlot(subset(sample.data[[sample]], nFeature_RNA > 1000 & percent.mt <= 12), features = c("nFeature_RNA"), pt.size = 0) + scale_y_continuous(breaks = c(0, 300, 500, 1000, 2000, 4000))
+  p3 <- VlnPlot(subset(sample.data[[sample]], nFeature_RNA > 1000 & percent.mt <= 12), features = c("percent.mt"), pt.size = 0) + scale_y_continuous(breaks = c(0, 12.5, 25, 50))
+  p <- plot_grid(p1, p2, p3, ncol = 3)
+  
+  print(p)
+  
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
