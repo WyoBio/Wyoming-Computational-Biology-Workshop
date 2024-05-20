@@ -466,6 +466,71 @@ Rep1_ICBdT_AAACCTGCACGGCCAT-1   4.139736  -0.8617120  -0.3006448 0.4993232 -0.63
 Rep1_ICBdT_AAACCTGCACGGTAAG-1   3.905916  -0.3761172   1.3514115 1.0349043  3.2202961
 Rep1_ICBdT_AAACCTGCATGCCACG-1 -67.302103 -45.6771707 -11.5863126 3.4400124  4.9678837
 ```
+### Visualizing PCAs
+Now, the task is to identify the most crucial PCs that capture both similarity and diversity without excessive noise. Multiple methods exist for analyzing your PCs.
+
+#### Elbow Plot
+A widely used method for comprehending PCs is through an elbow plot. The PC identified as the 'elbow' point is where the standard deviation ceases to decrease dramatically and stabilizes.
+
+```R
+elbow <- ElbowPlot(merged, ndims = 30)
+
+print(elbow)
+```
+### Dimension Heat maps
+Another approach to understanding PCs is through heatmaps. These visualizations reveal the key genes influencing each PC and their expression levels across cells. The goal is to create heatmaps that display clear contrast instead of appearing as a messy blur. Importantly, we examine which genes are driving the PC and ensure that our PCs include relevant genes based on our analysis goals.
+
+```R
+DimHeatmap(merged, dims = 1:12, balanced = TRUE, cells = 500)
+
+DimHeatmap(merged, dims = 13:24, balanced = TRUE, cells = 500)
+
+DimHeatmap(merged, dims = 25:36, balanced = TRUE, cells = 500)
+```
+### Jackstraw
+Jackstraw is an older and computationally intensive method for assessing the variability of PCs. While it may be resource-intensive, it can provide valuable insights into which PCs to prioritize. Typically, p-values above -100 are considered indicative of useful PCs.
+
+```R
+merged <- JackStraw(merged, num.replicate = 100, dims = 30)
+merged <- ScoreJackStraw(merged, dims = 1:30)
+plot <- JackStrawPlot(merged, dims = 1:30)
+print(plot)
+```
+### Selecting the Number of PCs
+By employing the elbow, heatmap, and potentially jackstraw methods, we can make an informed decision on the number of PCs to use for cell clustering. Our goal is to include as much information as possible without introducing excessive noise.
+
+Another strategy to determine our PC cutoff involves examining how many PCs have a standard deviation exceeding 2.
+
+```R
+ndims = length(which(merged@reductions$pca@stdev > 2)) # determines which PCs are important (stdev>2) 
+ndims
+```
+
+After reviewing the elbow plot, the PC heatmaps, and potentially the JackStraw plot (considering its computation time), we've chosen to use 26 PCs. This decision offers a great opportunity to experiment and observe the impact of adding or removing PCs. When unsure, erring on the side of slightly more PCs is preferable to having too few.
+
+### Cell Clustering
+We're now at the Cell Clustering stage. The initial step is FindNeighbors, which calculates the k.param nearest neighbors for a given dataset. This process involves identifying the closest data points to a given data point based on a similarity metric like Euclidean distance or cosine similarity. This helps in pinpointing similar points in the dataset, aiding in predictions or grasping the data's distribution.
+
+```R
+PC = 22
+
+merged <- FindNeighbors(merged, dims = 1:PC)
+```
+
+Next, we execute FindClusters to group our cells based on similarity. While FindNeighbors targets the nearest neighbors of a single data point, FindClusters clusters multiple data points together based on their similarities.
+
+```R
+merged <- FindClusters(merged, resolution = 1.2, cluster.name = 'seurat_clusters_res1.2')
+```
+
+Lastly, we arrive at RunUMAP, which utilizes the clustering information to project our cells into a 2D space, facilitating visualization.
+
+```R
+merged <- RunUMAP(merged, dims = 1:PC)
+
+merged
+```
+
 
 
 
