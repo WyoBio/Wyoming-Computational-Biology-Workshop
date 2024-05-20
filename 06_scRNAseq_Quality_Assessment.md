@@ -58,7 +58,7 @@ Let's familiarize ourselves with the structure of this Seurat object and underst
 print(Rep1_ICB_data_seurat_obj)
 ```
 
-```R
+```
 An object of class Seurat 
 14423 features across 4169 samples within 1 assay 
 Active assay: RNA (14423 features, 0 variable features)
@@ -78,7 +78,7 @@ The raw counts are stored in an assay labeled as RNA.
 Rep1_ICB_data_seurat_obj[["RNA"]] # an assay with layers
 ```
 
-```R
+```
 Assay (v5) data with 14423 features for 4169 cells
 First 10 features:
  Mrpl15, Lypla1, Tcea1, Atp6v1h, Rb1cc1, 4732440D04Rik, Pcmtd1, Gm26901, Sntg1, Rrs1 
