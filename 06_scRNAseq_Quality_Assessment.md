@@ -92,7 +92,7 @@ Let's take a look at our counts.
 Rep1_ICB_data_seurat_obj[["RNA"]]$counts
 ```
 
-```R
+```
 14423 x 4169 sparse Matrix of class "dgCMatrix"
   [[ suppressing 59 column names ‘AAACCTGAGCGGATCA-1’, ‘AAACCTGCAAGAGGCT-1’, ‘AAACCTGCATACTCTT-1’ ... ]]
   [[ suppressing 59 column names ‘AAACCTGAGCGGATCA-1’, ‘AAACCTGCAAGAGGCT-1’, ‘AAACCTGCATACTCTT-1’ ... ]]
