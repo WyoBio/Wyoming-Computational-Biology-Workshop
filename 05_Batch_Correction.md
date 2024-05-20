@@ -30,7 +30,75 @@ library("edgeR")
 library("UpSetR")
 
 # Define working directories 
-datadir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection"
+datadir = "# Load R libraries 
+library("sva") 
+library("ggplot2")
+library("gridExtra")
+library("edgeR")
+library("UpSetR")
+
+# Define working directories 
+datadir = "# Load R libraries 
+library("sva") 
+library("ggplot2")
+library("gridExtra")
+library("edgeR")
+library("UpSetR")
+
+# Define working directories 
+datadir = "/project/biocompworkshop/Data_Vault"
+outdir = "/project/biocompworkshop/rshukla/BatchCorrection_Results"
+
+#load in the uncorrected data as raw counts
+setwd(datadir)
+
+uncorrected_data = read.table("GSE48035_ILMN.Counts.SampleSubset.ProteinCodingGenes.tsv", header=TRUE, sep="\t", as.is=c(1,2))
+
+setwd(outdir)
+
+# Simplify the names of the data columns
+# (A = Universal Human Reference RNA and B = Human Brain Reference RNA)
+# RNA = polyA enrichment and RIBO = ribosomal RNA depletion
+# 1, 2, 3, 4 are replicates
+names(uncorrected_data) = c("Gene", "Chr", "UHR_Ribo_1", "UHR_Ribo_2", "UHR_Ribo_3", "UHR_Ribo_4", "HBR_Ribo_1", "HBR_Ribo_2", "HBR_Ribo_3", "HBR_Ribo_4", 
+                            "UHR_Poly_1", "UHR_Poly_2", "UHR_Poly_3", "UHR_Poly_4", "HBR_Poly_1", "HBR_Poly_2", "HBR_Poly_3", "HBR_Poly_4")
+
+sample_names = names(uncorrected_data)[3:length(names(uncorrected_data))]
+
+# Review data structure
+head(uncorrected_data)
+dim(uncorrected_data)
+
+# Define conditions, library methods, and replicates
+conditions = c("UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR", "UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR")
+library_methods = c("Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly")
+replicates = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)"
+outdir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection/Results"
+
+#load in the uncorrected data as raw counts
+setwd(datadir)
+
+uncorrected_data = read.table("GSE48035_ILMN.Counts.SampleSubset.ProteinCodingGenes.tsv", header=TRUE, sep="\t", as.is=c(1,2))
+
+setwd(outdir)
+
+# Simplify the names of the data columns
+# (A = Universal Human Reference RNA and B = Human Brain Reference RNA)
+# RNA = polyA enrichment and RIBO = ribosomal RNA depletion
+# 1, 2, 3, 4 are replicates
+names(uncorrected_data) = c("Gene", "Chr", "UHR_Ribo_1", "UHR_Ribo_2", "UHR_Ribo_3", "UHR_Ribo_4", "HBR_Ribo_1", "HBR_Ribo_2", "HBR_Ribo_3", "HBR_Ribo_4", 
+                            "UHR_Poly_1", "UHR_Poly_2", "UHR_Poly_3", "UHR_Poly_4", "HBR_Poly_1", "HBR_Poly_2", "HBR_Poly_3", "HBR_Poly_4")
+
+sample_names = names(uncorrected_data)[3:length(names(uncorrected_data))]
+
+# Review data structure
+head(uncorrected_data)
+dim(uncorrected_data)
+
+# Define conditions, library methods, and replicates
+conditions = c("UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR", "UHR", "UHR", "UHR", "UHR", "HBR", "HBR", "HBR", "HBR")
+library_methods = c("Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Ribo", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly", "Poly")
+replicates = c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)"
 outdir = "~/NPRG Dropbox/Computaional Biology Workshop/Day2/BatchCorrection/Results"
 
 #load in the uncorrected data as raw counts
