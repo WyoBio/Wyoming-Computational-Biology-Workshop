@@ -411,21 +411,62 @@ merged <- CellCycleScoring(object=merged, s.features=s.genes, g2m.features=g2m.g
 head(merged[[]])
 ```
 ```
-                              orig.ident nCount_RNA nFeature_RNA percent.mt keep_cell_percent.mt
-Rep1_ICBdT_AAACCTGAGCCAACAG-1 Rep1_ICBdT      20585         4384   1.675978                 TRUE
-Rep1_ICBdT_AAACCTGAGCCTTGAT-1 Rep1_ICBdT       4528         1967   3.577739                 TRUE
-Rep1_ICBdT_AAACCTGAGTACCGGA-1 Rep1_ICBdT      12732         3327   2.764687                 TRUE
-Rep1_ICBdT_AAACCTGCACGGCCAT-1 Rep1_ICBdT       4903         2074   1.427697                 TRUE
-Rep1_ICBdT_AAACCTGCACGGTAAG-1 Rep1_ICBdT      10841         3183   2.472097                 TRUE
-Rep1_ICBdT_AAACCTGCATGCCACG-1 Rep1_ICBdT      10981         2788   2.030780                 TRUE
-                              keep_cell_nFeature     S.Score   G2M.Score Phase
-Rep1_ICBdT_AAACCTGAGCCAACAG-1               TRUE  0.61857647  0.19639961     S
-Rep1_ICBdT_AAACCTGAGCCTTGAT-1               TRUE -0.06225445 -0.13230705    G1
-Rep1_ICBdT_AAACCTGAGTACCGGA-1               TRUE -0.14015383 -0.17780932    G1
-Rep1_ICBdT_AAACCTGCACGGCCAT-1               TRUE -0.05258375 -0.06400598    G1
-Rep1_ICBdT_AAACCTGCACGGTAAG-1               TRUE -0.10176717 -0.06637093    G1
-Rep1_ICBdT_AAACCTGCATGCCACG-1               TRUE -0.08794336 -0.21230015    G1
+                              orig.ident nCount_RNA nFeature_RNA percent.mt keep_cell_percent.mt keep_cell_nFeature     S.Score   G2M.Score Phase
+Rep1_ICBdT_AAACCTGAGCCAACAG-1 Rep1_ICBdT      20585         4384   1.675978                 TRUE               TRUE  0.61857647  0.19639961     S
+Rep1_ICBdT_AAACCTGAGCCTTGAT-1 Rep1_ICBdT       4528         1967   3.577739                 TRUE               TRUE -0.06225445 -0.13230705    G1
+Rep1_ICBdT_AAACCTGAGTACCGGA-1 Rep1_ICBdT      12732         3327   2.764687                 TRUE               TRUE -0.14015383 -0.17780932    G1
+Rep1_ICBdT_AAACCTGCACGGCCAT-1 Rep1_ICBdT       4903         2074   1.427697                 TRUE               TRUE -0.05258375 -0.06400598    G1
+Rep1_ICBdT_AAACCTGCACGGTAAG-1 Rep1_ICBdT      10841         3183   2.472097                 TRUE               TRUE -0.10176717 -0.06637093    G1
+Rep1_ICBdT_AAACCTGCATGCCACG-1 Rep1_ICBdT      10981         2788   2.030780                 TRUE               TRUE -0.08794336 -0.21230015    G1
 ```
+### Decide on the Number of PCs for Clustering
+Examining the count matrix of our Seurat object serves as a reminder that processing the sheer number of genes and cells visually is impractical. We require a method to compress this information into a format that's more manageable and interpretable. Principal Component Analysis (PCA) is a dimension reduction strategy designed to capture similarities while retaining the underlying patterns that drive variation.
+
+Imagine if we had just two cells and a few genes. Plotted on an x-y graph, with one cell's gene expression on the x-axis and the other on the y-axis, we'd see a simple dot plot. Drawing lines through these points would measure the spread of data points in two directions—these lines are principal components (PCs). They summarize the data points into a single, more understandable entity.
+
+Adding another cell introduces another axis to our graph and another direction of potential variation. For our dataset's 23,185 cells, we have 23,185 directions of variation or principal components (PCs). PC1 represents the direction that captures the most variance.
+
+### Calculating PCAs
+Let's compute the Principal Components (PCs) for our dataset. We'll calculate the default 50 PCs, which should encompass a substantial amount of information for this dataset.
+
+```R
+merged <- RunPCA(merged, npcs = 50, assay = "RNA") 
+
+merged
+```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 2000 variable features)
+ 3 layers present: counts, data, scale.data
+ 1 dimensional reduction calculated: pca
+```
+```R
+merged[["pca"]]
+```
+```
+A dimensional reduction object with key PC_ 
+ Number of dimensions: 50 
+ Number of cells: 23185 
+ Projected dimensional reduction calculated:  FALSE 
+ Jackstraw run: FALSE 
+ Computed using assay: RNA
+```
+After calculating the PCs, each cell is then "fitted" into the context of those PCs. This involves determining for each cell, "What is the cell's score or embedding for a specific PC based on gene expression in that cell?
+
+```R
+head(Embeddings(merged, reduction = "pca")[, 1:5])
+```
+```
+                                    PC_1        PC_2        PC_3      PC_4       PC_5
+Rep1_ICBdT_AAACCTGAGCCAACAG-1   3.835173  -0.8115711   9.8921410 2.2594305 14.1203451
+Rep1_ICBdT_AAACCTGAGCCTTGAT-1   3.663907  -2.2085850  -1.2447077 1.2005316 -1.6541640
+Rep1_ICBdT_AAACCTGAGTACCGGA-1 -65.634614 -46.0958039  -9.3464346 7.9993856  3.6250345
+Rep1_ICBdT_AAACCTGCACGGCCAT-1   4.139736  -0.8617120  -0.3006448 0.4993232 -0.6362336
+Rep1_ICBdT_AAACCTGCACGGTAAG-1   3.905916  -0.3761172   1.3514115 1.0349043  3.2202961
+Rep1_ICBdT_AAACCTGCATGCCACG-1 -67.302103 -45.6771707 -11.5863126 3.4400124  4.9678837
+```
+
 
 
 
