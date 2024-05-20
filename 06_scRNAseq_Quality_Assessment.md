@@ -196,4 +196,44 @@ for (sample in sample_names) {
   sample.data[[sample]] = seurat_obj # add sample seurat object to list
 }
 ```
+### Removing Low-Quality Cells
+#### Compute the Percentage of Mitochondrial Genes per Cell
+We'll replicate the process we used for a single sample to calculate the percentage of mitochondrial genes for each cell across all samples. Once again, we'll employ a for-loop to achieve this task efficiently for all samples.
+
+```R
+for (sample in sample_names) {
+  sample.data[[sample]][["percent.mt"]] = 
+    PercentageFeatureSet(sample.data[[sample]], pattern = "^mt-", assay = "RNA")
+}
+```
+#### Observe the Cell Count Before Filtering
+
+```R
+for (sample in sample_names) {
+  print(table(Idents(sample.data[[sample]]))) 
+}
+```
+#### Violin Plots for Quality Assessment
+We can generate violin plots to assess the cell quality across each sample. Spend some time reviewing these plots and consider the optimal threshold for eliminating low-quality cells.
+
+```R
+for (sample in sample_names) {
+  print(sample)
+  
+  p1 <- VlnPlot(sample.data[[sample]], features = c("nCount_RNA"), pt.size = 0) 
+  p2 <- VlnPlot(sample.data[[sample]], features = c("nFeature_RNA"), pt.size = 0) + scale_y_continuous(breaks = c(0, 300, 500, 1000, 2000, 4000))
+  p3 <- VlnPlot(sample.data[[sample]], features = c("percent.mt"), pt.size = 0) + scale_y_continuous(breaks = c(0, 12.5, 25, 50))
+  p <- plot_grid(p1, p2, p3, ncol = 3)
+  
+  print(p)
+  
+}
+```
+
+
+
+
+
+
+
 
