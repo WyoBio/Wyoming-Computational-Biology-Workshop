@@ -51,7 +51,19 @@ Rep1_ICBdT_data_seurat_obj = CreateSeuratObject(counts = Rep1_ICBdT_data, projec
 
 Rep1_ICB_data_seurat_obj = CreateSeuratObject(counts = Rep1_ICB_data, project = "Rep1_ICB", min.cells = 10, min.features = 100)
 ```
+### Exploring the Seurat Object Structure
+Let's familiarize ourselves with the structure of this Seurat object and understand how we can extract the information necessary for quality assessment, clustering, and subsequent analysis.
 
+```R
+print(Rep1_ICB_data_seurat_obj)
+```
+
+```R
+An object of class Seurat 
+14423 features across 4169 samples within 1 assay 
+Active assay: RNA (14423 features, 0 variable features)
+ 1 layer present: counts
+```
 
 
 
