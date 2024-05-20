@@ -110,6 +110,68 @@ Gm26901       . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  . . . .
  ........suppressing 4110 columns and 14407 rows in show(); maybe adjust options(max.print=, width=)
  ..............................
 ```
+Let's take a peek at our counts matrix. It's not particularly human-friendly to read or interpret directly. If we could visualize the entire matrix, it would resemble a table with cell barcodes as columns and genes as row names, where the numbers denote the observed reads of each gene in every cell.
+
+We keep our more human-readable annotations in a section called `meta.data`. This section is much easier to interpret, with cell barcodes as row names and various labels as columns for each cell. As we delve into our data analysis, we'll add several columns to `meta.data`, so it's important to become accustomed to examining it! By default, `meta.data` includes three columns:
+
+- `orig.ident`: denotes the sample origin of each cell
+- `nCount_RNA`: indicates the total reads in each cell
+- `nFeature_RNA`: shows the number of genes detected in each cell
+
+```R
+head(Rep1_ICB_data_seurat_obj@meta.data)
+```
+```
+                   orig.ident nCount_RNA nFeature_RNA
+AAACCTGAGCGGATCA-1   Rep1_ICB       5679         1758
+AAACCTGCAAGAGGCT-1   Rep1_ICB       1397          496
+AAACCTGCATACTCTT-1   Rep1_ICB       8463         2444
+AAACCTGCATCATCCC-1   Rep1_ICB       4640         1721
+AAACCTGGTTCGGGCT-1   Rep1_ICB       3810         1291
+AAACCTGTCAGTCCCT-1   Rep1_ICB       7810         2079
+```
+Keep in mind that there are actually two methods to access the information stored in `meta.data`:
+
+```R
+# viewing meta.data
+head(Rep1_ICB_data_seurat_obj@meta.data)
+
+head(Rep1_ICB_data_seurat_obj[[]])
+
+# viewing the orig.ident column in meta.data
+
+head(Rep1_ICB_data_seurat_obj@meta.data$orig.ident)
+
+head(Rep1_ICB_data_seurat_obj[['orig.ident']])
+```
+We can examine the cell identities using the `Idents` function. In our dataset, cell identities are determined by the `orig.ident` column in the `meta.data`. Upon using the `table` function to generate a summary, we observe that all cells originate from the same sample, which aligns with our expectation as we are currently focused on a single sample's Seurat object.
+
+```R
+Idents(Rep1_ICB_data_seurat_obj) # View cell identities
+
+table(Idents(Rep1_ICB_data_seurat_obj)) # get summary table
+```
+Adding a column to `meta.data` is straightforward. To begin, let's add the percentage of mitochondrial genes, a crucial metric for identifying and removing low-quality cells later on. We'll name this column `percent.mt` and employ the `PercentageFeatureSet` function to compute the percentage of counts attributed to a specific subset of features in each cell. Using the `pattern` parameter, we'll match genes starting with "mt" (using the caret ^ character to denote "starts with"), and specify that this calculation should apply to our RNA assay.
+
+```R
+Rep1_ICB_data_seurat_obj[["percent.mt"]] = 
+    PercentageFeatureSet(Rep1_ICB_data_seurat_obj, pattern = "^mt-", assay = "RNA")
+
+head(Rep1_ICB_data_seurat_obj[[]]) # check to see the column in meta.data
+```
+
+We'll utilize `percent.mt` to evaluate the quality of our cells. Before proceeding to process all our samples, let's quickly examine this single-sample data. Through violin plots, we'll observe the number of reads, the number of genes, and the percentage of mitochondrial genes in each cell.
+
+```R
+p1 <- VlnPlot(Rep1_ICB_data_seurat_obj, features = c("nCount_RNA"), pt.size = 0) 
+p2 <- VlnPlot(Rep1_ICB_data_seurat_obj, features = c("nFeature_RNA"), pt.size = 0) + scale_y_continuous(breaks = c(0, 300, 500, 1000, 2000, 4000))
+p3 <- VlnPlot(Rep1_ICB_data_seurat_obj, features = c("percent.mt"), pt.size = 0) + scale_y_continuous(breaks = c(0, 12.5, 25, 50))
+p <- plot_grid(p1, p2, p3, ncol = 3)
+p
+```
+
+Upon observation, we note that a significant portion of cells possess more than 1000 genes and a mitochondrial percentage of less than 12. Cells deviating from this range likely indicate cell death or low quality, prompting us to filter them out.
+
 
 
 
