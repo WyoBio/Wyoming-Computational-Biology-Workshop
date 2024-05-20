@@ -42,7 +42,8 @@ The `CreateSeuratObject` function takes 4 parameters. First is the counts, sourc
 For example, processing two samples might look like this:
 
 ```R
-Rep1_ICBdT_data = Read10X_h5("Rep1_ICBdT-sample_filtered_feature_bc_matrix.h5") # read in the cellranger h5 file
+# Read in the cellranger h5 file
+Rep1_ICBdT_data = Read10X_h5("Rep1_ICBdT-sample_filtered_feature_bc_matrix.h5") 
 
 Rep1_ICB_data = Read10X_h5("Rep1_ICB-sample_filtered_feature_bc_matrix.h5")
 
