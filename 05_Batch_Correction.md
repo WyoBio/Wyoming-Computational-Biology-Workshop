@@ -271,11 +271,14 @@ listInput2 = list("4 UHR Ribo vs 4 HBR Ribo" = uhr_ribo_vs_hbr_ribo_corrected[,"
                   "4 UHR Poly vs 4 HBR Ribo" = uhr_poly_vs_hbr_ribo_corrected[,"Gene"],
                   "8 UHR vs 8 HBR" = uhr_vs_hbr_corrected[,"Gene"])
 upset(fromList(listInput2), order.by = "freq", number.angles=45, point.size=3)
-
-write.table(uhr_vs_hbr_corrected, file="DE_genes_uhr_vs_hbr_corrected.tsv", quote=FALSE, row.names=FALSE, sep="\t")
 ```
 
 An UpSet plot serves as an alternative to a Venn Diagram, displaying the overlap (intersection) among multiple sets of values. In this instance, we are assessing the intersection of genes identified as significantly differentially expressed (DE) across five distinct comparisons. The connected black circles represent each combination of sets under consideration. The bar graph above each column visualizes the number of shared genes within those sets. For instance, the initial column contains all five black circles, and the corresponding bar indicates the count of genes found in all five DE comparisons conducted.
 
+### Save batch corrected data
 
+```R
+setwd(outdir)
+write.table(uhr_vs_hbr_corrected, file="DE_genes_uhr_vs_hbr_corrected.tsv", quote=FALSE, row.names=FALSE, sep="\t")
+```
 
