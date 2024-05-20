@@ -530,8 +530,62 @@ merged <- RunUMAP(merged, dims = 1:PC)
 
 merged
 ```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 2000 variable features)
+ 3 layers present: counts, data, scale.data
+ 2 dimensional reductions calculated: pca, umap
+```
 
+### Plotting
+Let’s view our clusters with DimPlot.
 
+```R
+DimPlot(merged, label = TRUE, group.by = 'seurat_clusters_res1.2')
+```
+
+Let's color the clusters by our samples to ensure that no sample is clustering independently. This would indicate potential batch effects. Our goal is to have similar cells clustered together based on gene expression similarities, not due to technical factors like different sequencing batches or replicates.
+
+```R
+# UMAP by sample
+DimPlot(merged, label = TRUE, group.by = "orig.ident")
+```
+
+Our samples appear well mixed! To further confirm, we can highlight the cells from one sample and observe their distribution within the clusters.
+
+```R
+# UMAP with one day highlighted (not saved)
+highlighted_cells <- WhichCells(merged, expression = orig.ident == "Rep1_ICBdT")
+DimPlot(merged, reduction = 'umap', group.by = 'orig.ident', cells.highlight = highlighted_cells)
+```
+
+Let's delve into the cell cycle scoring calculations.
+
+```R
+FeaturePlot(merged, features = c("S.Score", "G2M.Score")) + DimPlot(merged,  group.by = "Phase")
+```
+
+### Exploring Clustering Resolution
+Now, let's delve into the intricacies of clustering resolution. Selecting cluster resolution is somewhat arbitrary and impacts the number of clusters identified (higher resolution implies more clusters). Notably, altering the cluster resolution doesn't change the shape of the UMAP. The UMAP's shape is influenced by the number of PCs used to construct it.
+
+```R
+merged <- FindClusters(merged, resolution = 0.8, cluster.name = 'seurat_clusters_res0.8')
+
+merged <- FindClusters(merged, resolution = 0.5, cluster.name = 'seurat_clusters_res0.5')
+
+DimPlot(merged, label = TRUE, group.by = 'seurat_clusters_res0.5') +
+  DimPlot(merged, label = TRUE, group.by = 'seurat_clusters_res0.8') + 
+  DimPlot(merged, label = TRUE, group.by = 'seurat_clusters_res1.2') 
+```
+
+### Save Object
+At last, let's save our object for future analysis.
+
+```R
+setwd(outdir)
+saveRDS(merged, file = "rep135_clustered.rds")
+```
 
 
 
