@@ -72,5 +72,45 @@ Assays(Rep1_ICB_data_seurat_obj) # seurat objects are made up of assays
 Layers(Rep1_ICB_data_seurat_obj) # assays contain layers
 ```
 
+The raw counts are stored in an assay labeled as RNA.
+
+```R
+Rep1_ICB_data_seurat_obj[["RNA"]] # an assay with layers
+```
+
+```R
+Assay (v5) data with 14423 features for 4169 cells
+First 10 features:
+ Mrpl15, Lypla1, Tcea1, Atp6v1h, Rb1cc1, 4732440D04Rik, Pcmtd1, Gm26901, Sntg1, Rrs1 
+Layers:
+ counts
+```
+
+Let's take a look at our counts.
+
+```R
+Rep1_ICB_data_seurat_obj[["RNA"]]$counts
+```
+
+```R
+14423 x 4169 sparse Matrix of class "dgCMatrix"
+  [[ suppressing 59 column names ‘AAACCTGAGCGGATCA-1’, ‘AAACCTGCAAGAGGCT-1’, ‘AAACCTGCATACTCTT-1’ ... ]]
+  [[ suppressing 59 column names ‘AAACCTGAGCGGATCA-1’, ‘AAACCTGCAAGAGGCT-1’, ‘AAACCTGCATACTCTT-1’ ... ]]
+                                                                                                                                           
+Mrpl15        . . . 1 . . . . . . . 1 1 . 2 . . . . . . . . 1 1 1 . . .  5 . . . 1 1 . . . 1 1 . . . . . . . . . . . . . . . 1 . . . ......
+Lypla1        . . . 1 . . . . . . . . . . 1 1 . . . . . . . 2 1 . . 1 .  6 . . 1 . . . . . . 1 . . 1 . . . . . . . . . . . 1 . . . . ......
+Tcea1         . . . . . . 2 . . . 1 . 1 . 1 . 2 1 1 . . . . . . . . . 1 20 . . 2 . 2 . 1 . 3 . . 1 1 . . . . 2 . 3 1 . 1 . . 3 . . 1 ......
+Atp6v1h       . 1 . . . . . . . . . . 1 . . 1 . . . . . . . . 1 . 1 . .  2 . . . 2 1 . . . . . . 2 1 . 1 . . 1 2 . 1 . . . . . . . 1 ......
+Rb1cc1        . . . . 2 . 1 . . . . . 3 . 1 1 . . . . . 1 . . 2 4 . . .  1 . . . 1 1 . . . 1 1 . . . . . 2 . 2 1 . 2 1 . . . . 2 1 . ......
+4732440D04Rik . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  1 . . . . . . . . 1 . . . . . . . . . . . 1 . . . . . . . . ......
+Pcmtd1        . . . . . 1 . . . . . . . . . 1 1 . . . . 1 . . 1 . . 1 .  3 . . . . 1 . . . . . . . . 1 . 1 . . . . . . . . . . 1 1 . ......
+Gm26901       . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ......
+
+ ..............................
+ ........suppressing 4110 columns and 14407 rows in show(); maybe adjust options(max.print=, width=)
+ ..............................
+```
+
+
 
 
