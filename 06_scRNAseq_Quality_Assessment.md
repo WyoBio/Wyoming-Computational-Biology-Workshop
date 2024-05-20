@@ -64,7 +64,13 @@ An object of class Seurat
 Active assay: RNA (14423 features, 0 variable features)
  1 layer present: counts
 ```
+We observe that our Seurat object comprises 14,423 features representing genes, 4,169 samples representing cells, and 1 assay representing our counts matrix.
 
+```R
+Assays(Rep1_ICB_data_seurat_obj) # seurat objects are made up of assays
+
+Layers(Rep1_ICB_data_seurat_obj) # assays contain layers
+```
 
 
 
