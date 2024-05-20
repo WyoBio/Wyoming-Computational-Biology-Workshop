@@ -356,8 +356,76 @@ An object of class Seurat
 Active assay: RNA (18187 features, 0 variable features)
  2 layers present: counts, data
 ```
+### Identify Variable Features
+Next, we'll pinpoint genes that exhibit high expression in certain cells and low expression in others, identified as outliers on a 'mean variability plot.' We'll employ `vst` to select the top variable features, which will be instrumental in downstream analysis, such as PCA.
 
+```R
+merged <- FindVariableFeatures(merged, assay = "RNA", selection.method = "vst", nfeatures = 2000, mean.cutoff = c(0.1, 8), dispersion.cutoff = c(1,Inf))
+```
+We can depict the highly variable genes using a dot plot.
 
+```R
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(merged), 10)
+top10
+
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(object=merged)
+HoverLocator(plot = plot1)
+```
+Understanding where the information about the variable features is stored can be a bit challenging.
+
+```R
+merged[["RNA"]]
+```
+```
+Assay (v5) data with 18187 features for 23185 cells
+Top 10 variable features:
+ Jchain, Ighg1, Igkc, Sprr2d, Mzb1, Slpi, Sprr2f, Sprr2h, Saa3, Cxcl3 
+Layers:
+ counts, data
+```
+### Scale Data
+Now we will scale and center the genes in the dataset.
+
+```R
+merged <- ScaleData(merged, verbose = TRUE) 
+
+merged
+```
+```
+An object of class Seurat 
+18187 features across 23185 samples within 1 assay 
+Active assay: RNA (18187 features, 2000 variable features)
+ 3 layers present: counts, data, scale.data
+```
+### Scoring Cell Cycle
+Incorporating Cell Cycle scoring is a valuable step that enhances the information within your Seurat object. We'll utilize gprofiler2 to extract a list of mouse genes linked to various phases of the cell cycle. Subsequently, the Seurat function 'CellCycleScoring' will compute a score for each cell using these specified genes and assign a phase to each cell. This process will augment the meta.data with the columns S.Score, G2M.Score, and Phase.
+
+```R
+s.genes = gorth(cc.genes.updated.2019$s.genes, source_organism = "hsapiens", target_organism = "mmusculus")$ortholog_name
+g2m.genes = gorth(cc.genes.updated.2019$g2m.genes, source_organism = "hsapiens", target_organism = "mmusculus")$ortholog_name
+
+merged <- CellCycleScoring(object=merged, s.features=s.genes, g2m.features=g2m.genes, set.ident=FALSE)
+
+head(merged[[]])
+```
+```
+                              orig.ident nCount_RNA nFeature_RNA percent.mt keep_cell_percent.mt
+Rep1_ICBdT_AAACCTGAGCCAACAG-1 Rep1_ICBdT      20585         4384   1.675978                 TRUE
+Rep1_ICBdT_AAACCTGAGCCTTGAT-1 Rep1_ICBdT       4528         1967   3.577739                 TRUE
+Rep1_ICBdT_AAACCTGAGTACCGGA-1 Rep1_ICBdT      12732         3327   2.764687                 TRUE
+Rep1_ICBdT_AAACCTGCACGGCCAT-1 Rep1_ICBdT       4903         2074   1.427697                 TRUE
+Rep1_ICBdT_AAACCTGCACGGTAAG-1 Rep1_ICBdT      10841         3183   2.472097                 TRUE
+Rep1_ICBdT_AAACCTGCATGCCACG-1 Rep1_ICBdT      10981         2788   2.030780                 TRUE
+                              keep_cell_nFeature     S.Score   G2M.Score Phase
+Rep1_ICBdT_AAACCTGAGCCAACAG-1               TRUE  0.61857647  0.19639961     S
+Rep1_ICBdT_AAACCTGAGCCTTGAT-1               TRUE -0.06225445 -0.13230705    G1
+Rep1_ICBdT_AAACCTGAGTACCGGA-1               TRUE -0.14015383 -0.17780932    G1
+Rep1_ICBdT_AAACCTGCACGGCCAT-1               TRUE -0.05258375 -0.06400598    G1
+Rep1_ICBdT_AAACCTGCACGGTAAG-1               TRUE -0.10176717 -0.06637093    G1
+Rep1_ICBdT_AAACCTGCATGCCACG-1               TRUE -0.08794336 -0.21230015    G1
+```
 
 
 
