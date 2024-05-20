@@ -14,7 +14,7 @@ library(gage)
 - Importing Differential Expression Results for Pathway Analysis
 ```R
 # Define and set working dir paths
-datadir = "/Users/ramshukla/NPRG Dropbox/Computaional Biology Workshop/Day2/Differential Expression/DE_Results"
+datadir = "/project/biocompworkshop/rshukla/DE_Results"
 setwd(datadir)
 
 # Load in the DE results file with only significant genes
