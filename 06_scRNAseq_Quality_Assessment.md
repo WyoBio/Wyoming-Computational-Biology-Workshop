@@ -172,7 +172,28 @@ p
 
 Upon observation, we note that a significant portion of cells possess more than 1000 genes and a mitochondrial percentage of less than 12. Cells deviating from this range likely indicate cell death or low quality, prompting us to filter them out.
 
+### Simplifying Seurat Object Creation for Multiple Samples
+The code above serves its purpose well, but it demands precise paths and sample names to function correctly. This leaves ample room for minor errors and can be time-consuming to write out each command manually.
 
+#### for-loop to read in all six sample files
+Our for-loop achieves two key tasks: reading in the cellranger files and creating Seurat objects. It can be interpreted as follows: "For each sample in the `sample_names` list, construct the path to locate the h5 file for that sample, print the path for verification, utilize the `Read10X_h5` function to read the h5 file, generate a Seurat object using `CreateSeuratObject`, and ultimately add that sample’s Seurat object to a list. Upon completing the for-loop, our `sample_data` list should encompass all six samples."
 
+```R
+# List of sample names
+sample_names <- c("Rep1_ICBdT", "Rep1_ICB", "Rep3_ICBdT", "Rep3_ICB",
+                  "Rep5_ICBdT", "Rep5_ICB")
 
+sample.data  = list() # create a list to hold seurat object
+
+for (sample in sample_names) {
+  path = paste("/project/biocompworkshop/Data_Vault/scRNAseq/", sample, "-sample_filtered_feature_bc_matrix.h5", sep="") # paste together a path name for the h5 file
+  print(path) # check to make sure the path is correct
+
+  data = Read10X_h5(path) # read in the cellranger h5 file
+
+  seurat_obj = CreateSeuratObject(counts = data, project = sample, min.cells = 10, min.features = 100)
+
+  sample.data[[sample]] = seurat_obj # add sample seurat object to list
+}
+```
 
