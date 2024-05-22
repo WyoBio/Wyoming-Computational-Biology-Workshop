@@ -381,7 +381,8 @@ cat featurecounts.txt | cut -f1,7- | less
 - Login to your southpass account with ARCC using this link: https://southpass.arcc.uwyo.edu/pun/sys/dashboard  
 - Click on Beartooth Xfce Desktop. This will take you to resource request form.
 - 
-- 
+### Parallel Processing
+We are using small number of samples which are prepared to study only chromosoem 22. During actuall analysis you will have several large datasets and aligning one file can take hours and aliging all the files could take days. To speed up the process we will perform parallel processing. 
 
 
 
