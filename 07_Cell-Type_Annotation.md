@@ -227,11 +227,93 @@ DimPlot(merged, group.by = c("immgen_singler_main"))
 
 DimPlot(merged, group.by = c("immgen_singler_fine")) + NoLegend()
 ```
+### What variances do we observe in our cell annotations when employing an alternate reference set?
+The chosen dataset originates from the Benayoun Lab, which curated, acquired, and processed datasets from GEO matching sorted cell types as described by Benayoun et al., 2019. It comprises 358 mouse RNA-seq samples annotated across 18 primary cell types ("label.main"), further categorized into 28 subtypes ("label.fine"). These subtypes have been aligned with the Cell Ontology, similar to the ImmGen reference.
+
+```R
+ref_mouserna <- celldex::MouseRNAseqData()
+```
+Upon examining this reference, we can observe that it includes the `main`, `fine`, and `ont` labels similar to what we observed in the ImmGen reference.
+
+```R
+ref_mouserna
+```
+```
+class: SummarizedExperiment 
+dim: 21214 358 
+metadata(0):
+assays(1): logcounts
+rownames(21214): Xkr4 Rp1 ... LOC100039574 LOC100039753
+rowData names(0):
+colnames(358): ERR525589Aligned ERR525592Aligned ... SRR1044043Aligned SRR1044044Aligned
+colData names(3): label.main label.fine label.ont
+```
+```R
+predictions_mouse_main = SingleR(test = GetAssayData(merged), 
+                      ref = ref_mouserna,
+                      labels = ref_mouserna$label.main)
+
+predictions_mouse_fine = SingleR(test = GetAssayData(merged), 
+                           ref = ref_mouserna,
+                           labels = ref_mouserna$label.fine)
+```
+```
+merged[['mouserna_singler_main']] = rep('NA', ncol(merged))
+merged$mouserna_singler_main[rownames(predictions_mouse_main)] = predictions_mouse_main$labels
+
+#add fine labels to object
+merged[['mouserna_singler_fine']] = rep('NA', ncol(merged))
+merged$mouserna_singler_fine[rownames(predictions_mouse_fine)] = predictions_mouse_fine$labels
+```
+Let's visualize the differences in cell labeling between the primary labels from ImmGen and MouseRNA datasets.
+
+```R
+table(predictions_main$labels)
+table(predictions_mouse_main$labels)
+```
+```
+          B cells      B cells, pro         Basophils                DC Endothelial cells  Epithelial cells 
+             3253                 3                37               295                71              1238 
+      Fibroblasts               ILC       Macrophages        Mast cells         Monocytes          NK cells 
+              589               763               459                11               633               565 
+              NKT       Neutrophils        Stem cells     Stromal cells           T cells               Tgd 
+             2249                92                 2                18             12714               193 
 
 
+       Adipocytes           B cells   Dendritic cells Endothelial cells       Fibroblasts      Granulocytes 
+                4              3325                94               245               979               116 
+      Hepatocytes       Macrophages         Monocytes          NK cells           T cells 
+              652               185              1013              1341             15231 
+```
+```R
+p1 <- DimPlot(merged, group.by = c("immgen_singler_main")) + scale_colour_viridis(option = 'turbo', discrete = TRUE)
+p2 <- DimPlot(merged, group.by = c("mouserna_singler_main")) + scale_colour_viridis(option = 'turbo', discrete = TRUE)
+p <- plot_grid(p1, p2, ncol = 2)
+p
+```
 
+### Annotation Datasets: A Quick Insight
+The choice of reference data significantly influences annotation outcomes, with a broader label spectrum in the reference dataset being crucial for accurate results compared to our test data. Trusting the original authors' labeling of reference samples can be a leap of faith, leading to variations in performance due to differences in sample preparation quality among references. Ideally, we prefer references aligned with our test dataset's technology or protocol, although this is less critical when using SingleR() for well-defined cell types.
 
+For detailed insights and recommendations on reference selection, users are encouraged to consult the relevant vignette. Notably, while the ImmGen dataset and other references were initially part of SingleR, they are now in the celldex package for wider use across Bioconductor. Additionally, users can supply their own reference datasets, needing only log-expression values and cell/sample labels.
 
+### Gaining insights into clustering through cell typing.
+We're aware that the UMAP shape shifts when altering the number of PCs, but what drives this change in UMAP shape? Let's experiment by generating a UMAP using only 5 PCs.
+
+```R
+merged_5PC <- RunUMAP(merged, dims = 1:5)
+
+DimPlot(merged_5PC, label = TRUE, group.by = 'immgen_singler_main')
+
+DimHeatmap(merged, dims = 1:5, balanced = TRUE, cells = 500)
+```
+Upon closer observation, we notice that the cells tend to aggregate into broader clusters. For instance, immune cells amalgamate into a single large cluster. Enhancing the number of PCs allows us to leverage more information, enabling finer distinctions among specific cell types. The clear delineation of the B cell cluster in our previous analysis was achievable due to the sufficient genetic expression data included in the selected PCs.
+
+### Saving data
+
+```R
+saveRDS(merged, file = "preprocessed_object.rds")
+```
 
 
 
