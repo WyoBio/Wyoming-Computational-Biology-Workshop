@@ -44,7 +44,7 @@ Invoking the ImmGenData() function returns a SummarizedExperiment object that in
 ```R
 ref_immgen
 ```
-```R
+```
 class: SummarizedExperiment 
 dim: 22134 830 
 metadata(0):
@@ -91,3 +91,29 @@ By examining the ont labels, we observe that the subtypes are now linked to Cell
 [1] "CL:0000235" "CL:0000235" "CL:0000235" "CL:0000583" "CL:0000583"
 [6] "CL:0000583" "CL:0000576" "CL:0000576" "CL:0000576" "CL:0000576"
 ```
+### Utilizing the ImmGen cell reference with our dataset
+
+```R
+#generate predictions for our seurat object
+predictions_main = SingleR(test = GetAssayData(merged), 
+                      ref = ref_immgen,
+                      labels = ref_immgen$label.main)
+
+predictions_fine = SingleR(test = GetAssayData(merged), 
+                           ref = ref_immgen,
+                           labels = ref_immgen$label.fine)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
