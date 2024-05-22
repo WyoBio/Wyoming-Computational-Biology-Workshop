@@ -87,7 +87,7 @@ head(ref_immgen$label.ont, n=10)
 ```
 By examining the ont labels, we observe that the subtypes are now linked to Cell Ontology IDs.
 
-```
+```R
 [1] "CL:0000235" "CL:0000235" "CL:0000235" "CL:0000583" "CL:0000583"
 [6] "CL:0000583" "CL:0000576" "CL:0000576" "CL:0000576" "CL:0000576"
 ```
