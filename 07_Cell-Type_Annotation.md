@@ -23,6 +23,8 @@ library(SingleR)
 library(celldex)
 library(Seurat)
 library(cowplot)
+library(ggplot2)
+library(viridis)
 
 datadir = "/project/biocompworkshop/rshukla/scRNASeq_Results"
 setwd(datadir)
@@ -189,8 +191,42 @@ plotDeltaDistribution(predictions_main, ncol = 4, dots.on.top = FALSE)
 
 plotScoreHeatmap(predictions_main)
 ```
+Instead of solely focusing on the singleR dataframe, we have the option to incorporate the labels into our Seurat data object as a metadata field. Let's proceed with adding the cell type labels to our Seurat object.
 
+```R
+#add main labels to object
+merged[['immgen_singler_main']] = rep('NA', ncol(merged))
+merged$immgen_singler_main[rownames(predictions_main)] = predictions_main$labels
 
+#add fine labels to object
+merged[['immgen_singler_fine']] = rep('NA', ncol(merged))
+merged$immgen_singler_fine[rownames(predictions_fine)] = predictions_fine$labels
+```
+Now, let's create a visualization to observe the cell typing within our data.
+
+What are the variations in the relative cell composition among our samples?
+
+```R
+#visualizing the relative proportion of cell types across our samples
+library(viridis)
+library(ggplot2)
+ggplot(merged[[]], aes(x = orig.ident, fill = immgen_singler_main)) + geom_bar(position = "fill") + scale_fill_viridis(discrete = TRUE)
+```
+We can alternatively rotate the samples and cell labels to view the data as shown below.
+
+```R
+ggplot(merged[[]], aes(x = immgen_singler_main, fill = orig.ident)) + geom_bar(position = "fill") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + scale_fill_viridis(discrete = TRUE)
+
+ggplot(merged[[]], aes(x = immgen_singler_fine, fill = orig.ident)) + geom_bar(position = "fill") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + scale_fill_viridis(discrete = TRUE) 
+```
+How are our cluster definitions related to the annotations of cell types?
+
+```R
+#plotting cell types on our umaps
+DimPlot(merged, group.by = c("immgen_singler_main"))
+
+DimPlot(merged, group.by = c("immgen_singler_fine")) + NoLegend()
+```
 
 
 
