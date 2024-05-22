@@ -24,6 +24,8 @@ library(celldex)
 library(Seurat)
 library(cowplot)
 
+datadir = "/project/biocompworkshop/rshukla/scRNASeq_Results"
+setwd(datadir)
 merged <- readRDS("outdir_single_cell_rna/rep135_clustered.rds")
 ```
 
