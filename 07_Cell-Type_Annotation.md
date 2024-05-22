@@ -44,7 +44,7 @@ Invoking the ImmGenData() function returns a SummarizedExperiment object that in
 ```R
 ref_immgen
 ```
-```
+```R
 class: SummarizedExperiment 
 dim: 22134 830 
 metadata(0):
@@ -64,7 +64,7 @@ head(ref_immgen$label.main, n=10)
 ```
 Analyzing the primary labels reveals general cell types like Macrophages and Monocytes.
 
-```
+```R
 [1] "Macrophages" "Macrophages" "Macrophages"
 [4] "Macrophages" "Macrophages" "Macrophages"
 [7] "Monocytes"   "Monocytes"   "Monocytes"  
@@ -75,7 +75,7 @@ head(ref_immgen$label.fine, n=10)
 ```
 Looking at the detailed labels, we observe a refinement of the broader cell types mentioned earlier. Instead of just 6 labels for Macrophages, we now encounter specific subtypes like Macrophages (MF.11C-11B+).
 
-```
+```R
 [1] "Macrophages (MF.11C-11B+)" "Macrophages (MF.11C-11B+)"
 [3] "Macrophages (MF.11C-11B+)" "Macrophages (MF.ALV)"     
 [5] "Macrophages (MF.ALV)"      "Macrophages (MF.ALV)"     
