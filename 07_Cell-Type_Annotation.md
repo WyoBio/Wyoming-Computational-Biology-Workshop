@@ -103,6 +103,108 @@ predictions_fine = SingleR(test = GetAssayData(merged),
                            ref = ref_immgen,
                            labels = ref_immgen$label.fine)
 ```
+What is the structure of these objects?
+
+```R
+head(predictions_main)
+```
+You should see a format similar to the one below, where each row represents a barcode and the columns correspond to scores, labels (assigned cell type), delta, and pruned.labels.
+
+```
+DataFrame with 6 rows and 4 columns
+                                                         scores      labels delta.next pruned.labels
+                                                       <matrix> <character>  <numeric>   <character>
+Rep1_ICBdT_AAACCTGAGCCAACAG-1 0.4156037:0.4067582:0.2845856:...         NKT  0.0124615           NKT
+Rep1_ICBdT_AAACCTGAGCCTTGAT-1 0.4551058:0.3195934:0.2282272:...     B cells  0.1355124       B cells
+Rep1_ICBdT_AAACCTGAGTACCGGA-1 0.0717647:0.0621878:0.0710026:... Fibroblasts  0.1981683   Fibroblasts
+Rep1_ICBdT_AAACCTGCACGGCCAT-1 0.2774994:0.2569566:0.2483387:...    NK cells  0.0577608      NK cells
+Rep1_ICBdT_AAACCTGCACGGTAAG-1 0.3486259:0.3135662:0.3145100:...     T cells  0.1038542       T cells
+Rep1_ICBdT_AAACCTGCATGCCACG-1 0.0399733:0.0229926:0.0669236:... Fibroblasts  0.2443470   Fibroblasts
+```
+#### What information do these columns provide us?
+
+- The **scores** column includes a matrix for each barcode, indicating SingleR's confidence in assigning each cell type to the corresponding barcode row.
+  - Each cell within this matrix reflects the level of confidence for a specific cell type assignment.
+- The **labels** column represents SingleR's most confident assignment for each barcode, highlighting the predominant cell type identification.
+- The **delta** column encompasses the "delta" value per cell, indicating the discrepancy between the score for the assigned label and the median score across all labels.
+  - A small delta suggests uniform confidence across labels, possibly indicating less meaningful assigned labels.
+- SingleR can eliminate cells with low delta values caused by:
+  - Ambiguous assignments with closely related reference labels.
+  - Incorrect assignments that poorly match all reference labels.
+- The **pruned.labels** column contains "cleaner" or more reliable labels after SingleR has discarded cells with low delta values, ensuring more accurate cell type assignments.
+
+How many cells have labels with low confidence?
+
+```R
+unique(predictions_main$pruned.labels)
+```
+```
+ [1] "NKT"               "B cells"           "Fibroblasts"       "NK cells"          "T cells"           "Neutrophils"      
+ [7] "DC"                "Monocytes"         "ILC"               "Epithelial cells"  "Macrophages"       "Basophils"        
+[13] "Tgd"               "Mast cells"        "Endothelial cells" NA                  "Stem cells"        "Stromal cells"    
+[19] "B cells, pro"
+```
+```R
+table(predictions_main$pruned.labels)
+```
+```
+          B cells      B cells, pro         Basophils                DC Endothelial cells  Epithelial cells       Fibroblasts 
+             3219                 3                33               295                67              1238               577 
+              ILC       Macrophages        Mast cells         Monocytes          NK cells               NKT       Neutrophils 
+              752               454                11               617               562              2241                92 
+       Stem cells     Stromal cells           T cells               Tgd 
+                2                18             12631               189
+```
+```R
+table(predictions_main$labels)
+```
+```
+          B cells      B cells, pro         Basophils                DC Endothelial cells  Epithelial cells       Fibroblasts 
+             3253                 3                37               295                71              1238               589 
+              ILC       Macrophages        Mast cells         Monocytes          NK cells               NKT       Neutrophils 
+              763               459                11               633               565              2249                92 
+       Stem cells     Stromal cells           T cells               Tgd 
+                2                18             12714               193
+```
+```R
+summary(is.na(predictions_main$pruned.labels))
+```
+```
+   Mode   FALSE    TRUE 
+logical   23001     184
+```
+Are there more or fewer pruned labels for the fine labels?
+
+```R
+summary(is.na(predictions_fine$pruned.labels))
+```
+```
+   Mode   FALSE    TRUE 
+logical   23005     180
+```
+Having gained an understanding of the structure and content of the SingleR dataframe, let's move on to visualizing the data.
+
+```R
+plotDeltaDistribution(predictions_main, ncol = 4, dots.on.top = FALSE)
+
+plotScoreHeatmap(predictions_main)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
