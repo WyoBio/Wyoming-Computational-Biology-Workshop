@@ -382,7 +382,36 @@ cat featurecounts.txt | cut -f1,7- | less
 - Click on Beartooth Xfce Desktop. This will take you to resource request form.
 - 
 ### Parallel Processing
-We are using small number of samples which are prepared to study only chromosoem 22. During actuall analysis you will have several large datasets and aligning one file can take hours and aliging all the files could take days. To speed up the process we will perform parallel processing. 
+We are working with a small number of samples specifically prepared to study chromosome 22. In a real-world analysis, you will typically have much larger datasets, and aligning a single file can take hours, while aligning all files could take days. To expedite this process, we will employ parallel processing.
+
+We'll use the same example dataset and run it using parallel processing. First, we'll create a script that generates the `hisat2` alignment commands for all the files you need to align. These commands will be saved in a file named `cmd.list`, which we will then use to run all the alignment commands in parallel.
+
+```bash
+#!/bin/bash
+
+idx_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/chr22"
+splice_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/splicesites.tsv"
+SRC_DIR="/project/biocompworkshop/rshukla/FastQ"
+out_dir="/project/biocompworkshop/rshukla/PP_Results"
+
+cd $SRC_DIR
+
+for file in *read1.fastq.gz; 
+do
+Base_Name="${file%read1.fastq.gz}"
+out_file="${file%_ERCC*}"
+out_name="${out_dir}/${out_file}.bam"
+
+L1R1_File="${Base_Name}read1.fastq.gz"
+L2R1_File="${Base_Name}read1.fastq.gz"
+L1R2_File="${Base_Name}read2.fastq.gz"
+L2R2_File="${Base_Name}read2.fastq.gz"
+
+echo "hisat2 -p 4 --rg-id=${out_file} --rg SM:${out_file} --rg LB:${out_file} --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x ${idx_dir} --dta --rna-strandness RF -1 ${SRC_DIR}/${L1R1_File} -2 ${SRC_DIR}/${L1R2_File} | samtools view -bS - | samtools sort > ${out_name}"
+
+done
+```
+
 
 
 
