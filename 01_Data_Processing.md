@@ -387,7 +387,7 @@ We are working with a small number of samples specifically prepared to study chr
 We'll use the same example dataset and run it using parallel processing. First, we'll create a script that generates the `hisat2` alignment commands for all the files you need to align. These commands will be saved in a file named `cmd.list`, which we will then use to run all the alignment commands in parallel.
 
 #### Generating list of hisat2 commands
-You can use the following script by pasting it into any text editor (vi or nano) and saving it as a .bash file. For this session, it has been provided as hisat2_cmd.bash. This script automates the generation of alignment commands for RNA-seq data using hisat2 and samtools.
+You can use the following script by pasting it into any text editor (vi or nano) and saving it as a .bash file. For this session, it has been provided as `hisat2_cmd.bash`. This script automates the generation of alignment commands for RNA-seq data using hisat2 and samtools.
 
 ```bash
 #!/bin/bash
@@ -415,8 +415,6 @@ echo "hisat2 -p 4 --rg-id=${out_file} --rg SM:${out_file} --rg LB:${out_file} --
 done
 ```
 Here's a brief breakdown of what each part of the script does:
-
-This Bash script automates the generation of alignment commands for RNA-seq data using `hisat2` and `samtools`. Here's a brief breakdown of what each part of the script does:
 
 1. **Shebang and Variable Initialization:**
    ```bash
@@ -481,9 +479,37 @@ This Bash script automates the generation of alignment commands for RNA-seq data
    ```
    - Ends the loop.
 
-The script generates and prints `hisat2` alignment commands for each pair of FASTQ files in the source directory, ready to be executed or saved for parallel processing.
+### Execute the script
+To execute the `hisat2_cmd.bash` you might have to change the permission and then run it using the following command:
 
+```bash
+chmod +x hisat2_cmd.bash
+./hisat2_cmd.bash > cmd.list
+```
+### Run the command list in parallel
+Below I have given the Slurm batch script designed to run commands listed in a file (cmd.list) in parallel using GNU Parallel.
 
+```bash
+#!/bin/bash
+#SBATCH --job-name=hisat2-cmd
+#SBATCH --account=biocompworkshop
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=6
+#SBATCH --time=01:00:00
+ 
+module load arcc/1.0  
+module load gcc/12.2.0
+module load hisat2/2.2.1
+module load samtools/1.16.1
+module load parallel/20220522
+
+srun parallel --jobs 8 < /project/biocompworkshop/Data_Vault/cmd.list
+```
+The script does the following:
+- Allocates resources on an HPC cluster (2 nodes, 4 tasks per node, 6 CPUs per task).
+- Loads the necessary software modules required for the tasks.
+- Uses GNU Parallel to execute commands listed in /project/biocompworkshop/Data_Vault/cmd.list concurrently, with up to 8 commands running at the same time.
 
 
 
