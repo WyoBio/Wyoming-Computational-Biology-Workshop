@@ -511,5 +511,10 @@ The script does the following:
 - Loads the necessary software modules required for the tasks.
 - Uses GNU Parallel to execute commands listed in /project/biocompworkshop/Data_Vault/cmd.list concurrently, with up to 8 commands running at the same time.
 
-
+### Execute the script
+To run the script you might have to change the permission and then run it using the following command:
+```bash
+chmod +x ParallelProcessing.sh
+sbatch ParallelProcessing.sh
+```
 
