@@ -387,44 +387,7 @@ We are working with a small number of samples specifically prepared to study chr
 We'll use the same example dataset and run it using parallel processing. First, we'll create a script that generates the `hisat2` alignment commands for all the files you need to align. These commands will be saved in a file named `cmd.list`, which we will then use to run all the alignment commands in parallel.
 
 #### Generating list of hisat2 commands
-You can use the below script and paste it in any text editor (vi or nano) and save it as `.bash` file. For this session, I have provided it as `hisat2_cmd.bash`. This Bash script automates the generation of alignment commands for RNA-seq data using `hisat2` and `samtools`. Here's a brief breakdown of what each part of the script does:
-
-1. **Shebang and Variable Initialization:**
-
-   - The script starts with the shebang (`#!/bin/bash`), indicating that it should be run in the Bash shell.
-   - It initializes several variables for directories: the index directory (`idx_dir`), splice site file (`splice_dir`), source directory containing FASTQ files (`SRC_DIR`), and output directory (`out_dir`).
-
-3. **Navigate to the Source Directory:**
-
-   - Changes the current working directory to the source directory containing the FASTQ files.
-
-4. **Loop Through FASTQ Files:**
-
-   - Loops through all files in the source directory that match the pattern `*read1.fastq.gz`.
-
-5. **Generate Base Names and Output File Names:**
-
-   - Extracts the base name of each file by removing the `read1.fastq.gz` suffix.
-   - Creates the output file name by removing the `_ERCC` suffix from the original file name.
-   - Constructs the full path for the output BAM file.
-
-6. **Set Read Pair File Names:**
-
-   - Defines the file names for the read pairs (assuming a specific naming convention).
-
-7. **Print `hisat2` Command:**
-
-   - Constructs a `hisat2` command for aligning the reads, specifying various options:
-   - Pipes the output to `samtools` for converting to BAM format (`view -bS -`) and sorting (`samtools sort`).
-   - Prints the constructed command to the terminal (could be redirected to a file if needed).
-
-8. **End Loop:**
-
-   - Ends the loop.
-
-The script generates and prints `hisat2` alignment commands for each pair of FASTQ files in the source directory, ready to be executed or saved for parallel processing.
-
-
+You can use the following script by pasting it into any text editor (vi or nano) and saving it as a .bash file. For this session, it has been provided as hisat2_cmd.bash. This script automates the generation of alignment commands for RNA-seq data using hisat2 and samtools.
 
 ```bash
 #!/bin/bash
@@ -451,9 +414,74 @@ echo "hisat2 -p 4 --rg-id=${out_file} --rg SM:${out_file} --rg LB:${out_file} --
 
 done
 ```
+Here's a brief breakdown of what each part of the script does:
 
+This Bash script automates the generation of alignment commands for RNA-seq data using `hisat2` and `samtools`. Here's a brief breakdown of what each part of the script does:
 
+1. **Shebang and Variable Initialization:**
+   ```bash
+   #!/bin/bash
+   idx_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/chr22"
+   splice_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/splicesites.tsv"
+   SRC_DIR="/project/biocompworkshop/rshukla/FastQ"
+   out_dir="/project/biocompworkshop/rshukla/PP_Results"
+   ```
+   - The script starts with the shebang (`#!/bin/bash`), indicating that it should be run in the Bash shell.
+   - It initializes several variables for directories: the index directory (`idx_dir`), splice site file (`splice_dir`), source directory containing FASTQ files (`SRC_DIR`), and output directory (`out_dir`).
 
+2. **Navigate to the Source Directory:**
+   ```bash
+   cd $SRC_DIR
+   ```
+   - Changes the current working directory to the source directory containing the FASTQ files.
+
+3. **Loop Through FASTQ Files:**
+   ```bash
+   for file in *read1.fastq.gz; 
+   do
+   ```
+   - Loops through all files in the source directory that match the pattern `*read1.fastq.gz`.
+
+4. **Generate Base Names and Output File Names:**
+   ```bash
+   Base_Name="${file%read1.fastq.gz}"
+   out_file="${file%_ERCC*}"
+   out_name="${out_dir}/${out_file}.bam"
+   ```
+   - Extracts the base name of each file by removing the `read1.fastq.gz` suffix.
+   - Creates the output file name by removing the `_ERCC` suffix from the original file name.
+   - Constructs the full path for the output BAM file.
+
+5. **Set Read Pair File Names:**
+   ```bash
+   L1R1_File="${Base_Name}read1.fastq.gz"
+   L2R1_File="${Base_Name}read1.fastq.gz"
+   L1R2_File="${Base_Name}read2.fastq.gz"
+   L2R2_File="${Base_Name}read2.fastq.gz"
+   ```
+   - Defines the file names for the read pairs (assuming a specific naming convention).
+
+6. **Print `hisat2` Command:**
+   ```bash
+   echo "hisat2 -p 4 --rg-id=${out_file} --rg SM:${out_file} --rg LB:${out_file} --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x ${idx_dir} --dta --rna-strandness RF -1 ${SRC_DIR}/${L1R1_File} -2 ${SRC_DIR}/${L1R2_File} | samtools view -bS - | samtools sort > ${out_name}"
+   ```
+   - Constructs a `hisat2` command for aligning the reads, specifying various options:
+     - `-p 4`: Use 4 threads.
+     - `--rg-id`, `--rg SM`, `--rg LB`, `--rg PL`, `--rg PU`: Include read group information.
+     - `-x ${idx_dir}`: Specify the index directory.
+     - `--dta`: Enable downstream transcriptome assembly.
+     - `--rna-strandness RF`: Specify RNA strandness.
+     - `-1`, `-2`: Specify the input read files.
+   - Pipes the output to `samtools` for converting to BAM format (`view -bS -`) and sorting (`samtools sort`).
+   - Prints the constructed command to the terminal (could be redirected to a file if needed).
+
+7. **End Loop:**
+   ```bash
+   done
+   ```
+   - Ends the loop.
+
+The script generates and prints `hisat2` alignment commands for each pair of FASTQ files in the source directory, ready to be executed or saved for parallel processing.
 
 
 
