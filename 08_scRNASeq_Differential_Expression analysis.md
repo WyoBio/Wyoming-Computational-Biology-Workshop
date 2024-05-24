@@ -94,6 +94,44 @@ The dataframe "epithelial_de_sig_top20" contains the top 20 genes with the most 
 
 We have multiple options for visualizing the differentially expressed genes. We will begin with the Violin and Feature plots as previously discussed. Additionally, we can use a DotPlot to display the differential expression, showing both the average expression of a gene and the percentage of cells expressing it. Apart from these Seurat functions, we can create a volcano plot using the EnhancedVolcano package. In the volcano plot, we can utilize the unfiltered DE results to color and label genes based on specified parameters (pCutoff, FCcutoff).
 
+```R
+# Get list of top 20 DE genes for ease
+epithelial_de_sig_top20_genes <- rownames(epithelial_de_sig_top20)
+
+# Plot all 20 genes in violin plots
+VlnPlot(merged_epithelial, features = epithelial_de_sig_top20_genes, 
+  group.by = 'seurat_clusters_res0.8', ncol = 5, pt.size = 0)
+
+# Plot all 20 genes in UMAP plots
+FeaturePlot(merged_epithelial, features = epithelial_de_sig_top20_genes, ncol = 5)
+
+# Plot all 20 genes in a DotPlot
+DotPlot(merged_epithelial, features = epithelial_de_sig_top20_genes, 
+  group.by = 'seurat_clusters_res0.8') + RotatedAxis()
+
+# Plot all differentially expressed genes in a volcano plot
+EnhancedVolcano(epithelial_de,
+  lab = rownames(epithelial_de),
+  x = 'avg_log2FC',
+  y = 'p_val_adj',
+  title = 'Cluster9 wrt Cluster 12',
+  pCutoff = 0.05,
+  FCcutoff = 0.5,
+  pointSize = 3.0,
+  labSize = 5.0,
+  colAlpha = 0.3)
+```
+
+Stay tuned to discover how we can interpret the significance of these genes! The upcoming pathway analysis module will provide insights into this. Meanwhile, let's generate a TSV file containing our differential expression (DE) results for future use. We'll need to rerun FindMarkers with slightly adjusted parameters; specifically, we'll set the logfc.threshold parameter to 0. This change is necessary as one of the pathway analysis tools mandates the inclusion of all genes in the analysis (more details on this will follow).
+
+```R
+# Rerun FindMarkers
+epithelial_de_gsea <- FindMarkers(merged_epithelial, ident.1 = "9", 
+  ident.2 = "12", min.pct=0.25, logfc.threshold=0)
+# Save this table as a TSV file
+write.table(x = epithelial_de_gsea, 
+  file = 'epithelial_de_gsea.tsv', sep='\t')
+```
 
 
 
