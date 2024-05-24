@@ -30,7 +30,7 @@ datadir = "/project/biocompworkshop/rshukla/scRNASeq_Results"
 setwd(datadir)
 list.files()
 
-merged <- readRDS("outdir_single_cell_rna/rep135_clustered.rds")
+merged <- readRDS("rep135_clustered.rds")
 ```
 
 ### Choosing the appropriate reference dataset
