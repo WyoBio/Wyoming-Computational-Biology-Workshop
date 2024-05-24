@@ -134,8 +134,119 @@ write.table(x = epithelial_de_gsea,
   file = 'epithelial_de_gsea.tsv', sep='\t')
 ```
 
+### Differential gene expression analysis in T cells.
+
+For the analysis focusing on T cells, our goal is to compare T cells from mice treated with ICB to T cells from mice with some of their T cells depleted and treated with ICB (ICBdT). Initially, we will narrow down our merged object to exclusively include T cells. This involves consolidating various T cell annotations from the cell typing section. We'll begin by identifying all possible cell types available and selecting those related to T cells. Afterward, we'll use SetIdent to designate the cell type metadata column and subset the data to include only the cell types corresponding to T cells. Lastly, we'll verify that the subsetting process was successful as expected.
+
+```R
+# Check all the annotated celltypes
+unique(merged$immgen_singler_main)
+
+# Pick the ones that are related to T cells
+t_celltypes_names <- c('T cells', 'NKT', 'Tgd')
+merged <- SetIdent(merged, value = 'immgen_singler_main')
+merged_tcells <- subset(merged, idents = t_celltypes_names)
+
+# Confirm that we have subset the object as expected visually using a UMAP
+DimPlot(merged, group.by = 'immgen_singler_main', label = TRUE) + 
+DimPlot(merged_tcells, group.by = 'immgen_singler_main', label = TRUE)
+
+# Confirm that we have subset the object as expected by looking at the individual cell counts
+table(merged$immgen_singler_main)
+table(merged_tcells$immgen_singler_main)
+```
+
+Let's proceed with comparing T cells from mice treated with ICB versus those treated with ICBdT. Initially, we must differentiate between the ICB and ICBdT cells. Begin by selecting the object in RStudio and expanding the meta.data section to view the columns and the type of data they contain.
+
+It appears that the orig.ident column contains information about both the condition and replicates. However, for this differential expression (DE) analysis, we require a meta.data column that consolidates the replicates for each condition. Therefore, our goal is to merge the replicates of each condition into a unified category.
+
+```R
+# We'll start by checking the possible names each replicate has.
+unique(merged_tcells$orig.ident)
+
+# There are 6 possible values, 3 replicates for the ICB treatment condition, and 3 for the ICBdT condition
+# so we can combine "Rep1_ICB", "Rep3_ICB", "Rep5_ICB" to ICB, and "Rep1_ICBdT", "Rep3_ICBdT", "Rep5_ICBdT" to ICBdT. 
+# first initialize a metadata column for experimental_condition
+merged_tcells@meta.data$experimental_condition <- NA
+
+# Now we can take all cells that are in each replicate-condition, 
+# and assign them to the appropriate condition
+merged_tcells@meta.data$experimental_condition[merged_tcells@meta.data$orig.ident %in% c("Rep1_ICB", "Rep3_ICB", "Rep5_ICB")] <- "ICB"
+merged_tcells@meta.data$experimental_condition[merged_tcells@meta.data$orig.ident %in% c("Rep1_ICBdT", "Rep3_ICBdT", "Rep5_ICBdT")] <- "ICBdT"
+
+# Double check that the new column we generated makes sense 
+# (each replicate should correspond to its experimental condition)
+table(merged_tcells@meta.data$orig.ident, merged_tcells@meta.data$experimental_condition)
+```
+
+Now that we have established the experimental conditions, we can proceed to compare the T cells from both groups. Initially, we will utilize FindMarkers with parameters similar to the previous analysis to observe the changes in ICBdT compared to ICB. Following this, we will filter the dataframe to include only significant genes and examine the top five genes that are most upregulated and downregulated based on log2FC.
+
+```R
+# Carry out DE analysis between both groups
+merged_tcells <- SetIdent(merged_tcells, value = "experimental_condition")
+tcells_de <- FindMarkers(merged_tcells, ident.1 = "ICBdT", ident.2 = "ICB", min.pct=0.25)
+
+# Restrict differentially expressed genes to those with an adjusted p-value less than 0.001 
+tcells_de_sig <- tcells_de[tcells_de$p_val_adj < 0.001,]
+
+# Find the top 5 most downregulated genes
+tcells_de_sig %>%
+  top_n(n = 5, wt = -avg_log2FC)
+# Find the top 5 most upregulated genes
+tcells_de_sig %>%
+  top_n(n = 5, wt = avg_log2FC)
+```
+
+The gene with the highest downregulation in the ICBdT condition in terms of fold change is Cd4. This finding is logical since the monoclonal antibody (GK1.5) used for T cell depletion specifically targets CD4 T cells. Further information about the antibody can be found [here](link to the antibody details).
+
+It's noteworthy that among the list of upregulated genes, Cd8b1 appears. It might be intriguing to investigate whether the CD8 T cells' phenotype alters depending on the treatment condition. Let's proceed by narrowing down the object to include only CD8 T cells, identifying differentially expressed (DE) genes to observe how ICBdT CD8 T cells differ from ICB CD8 T cells, and visualize these results similar to our previous approach.
+
+```R
+# Subset object to CD8 T cells. Since we already showed how to subset cells using the clusters earlier, 
+# this time we'll subset to CD8 T cells by selecting for cells with high 
+# expression of Cd8 genes and low expression of Cd4 genes
+merged_cd8tcells <- subset(merged_tcells, subset= Cd8b1 > 1 & Cd8a > 1 & Cd4 < 0.1)
+
+# Carry out DE analysis between both groups
+merged_cd8tcells <- SetIdent(merged_cd8tcells, value = "experimental_condition")
+cd8tcells_de <- FindMarkers(merged_cd8tcells, ident.1 = "ICBdT", ident.2 = "ICB", min.pct=0.25) #how ICBdT changes wrt ICB
+
+# Restrict differentially expressed genes to those with an adjusted p-value less than 0.001 
+cd8tcells_de_sig <- cd8tcells_de[cd8tcells_de$p_val_adj < 0.001,]
+
+# Get the top 20 genes by fold change
+cd8tcells_de_sig %>%
+  top_n(n = 20, wt = abs(avg_log2FC)) -> cd8tcells_de_sig_top20
+
+# Get list of top 20 DE genes for ease
+cd8tcells_de_sig_top20_genes <- rownames(cd8tcells_de_sig_top20)
 
 
+# Plot all 20 genes in violin plots
+VlnPlot(merged_cd8tcells, features = cd8tcells_de_sig_top20_genes, group.by = 'experimental_condition', ncol = 5, pt.size = 0)
+
+# Plot all 20 genes in UMAP plots
+FeaturePlot(merged_cd8tcells, features = cd8tcells_de_sig_top20_genes, ncol = 5)
+
+# Plot all 20 genes in a DotPlot
+DotPlot(merged_cd8tcells, features = cd8tcells_de_sig_top20_genes, group.by = 'experimental_condition') + RotatedAxis()
+
+#plot all differentially expressed genes in a volcano plot
+EnhancedVolcano(cd8tcells_de,
+  lab = rownames(cd8tcells_de),
+  x = 'avg_log2FC',
+  y = 'p_val_adj',
+  title = 'ICBdT wrt ICB',
+  pCutoff = 0.05,
+  FCcutoff = 0.5,
+  pointSize = 3.0,
+  labSize = 5.0,
+  colAlpha = 0.3)
+```
+
+Now, you can begin conducting literature searches on some of these genes. You may discover that antigen-specific memory CD8 T cells exhibit increased expression of Bcl2 and Cdk8.
+
+Alternatively, we can utilize gene set and pathway analyses to explore the potential cellular processes in which these cells may be involved.
 
 
 
