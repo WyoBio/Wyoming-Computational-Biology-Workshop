@@ -170,6 +170,8 @@ grep ENST00000342247 $GTF/chr22_with_ERCC92.gtf | less -p "exon\s" -S
 ```
 #### Indexing
 
+Indexing is a crucial step before performing sequence alignment, ensuring that the alignment tool can quickly and accurately find the best matches for each read in the reference genome. It involves creating a data structure that allows for efficient mapping of sequencing reads to the reference genome by preprocessing the reference genome to generate an index, enabling quick lookup and alignment of sequences.
+
 ```bash
 echo $GTF
 cd $GTF
@@ -177,6 +179,7 @@ hisat2_extract_splice_sites.py chr22_with_ERCC92.gtf > $INDEX/splicesites.tsv
 hisat2_extract_exons.py chr22_with_ERCC92.gtf > $INDEX/exons.tsv
 hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
 ```
+
 #### RNAseq Data
 
 ```bash
@@ -338,10 +341,8 @@ find *Rep*.bam -exec echo java -jar $PICARD CollectRnaSeqMetrics I={} O=picard/{
 cd picard
 multiqc ./
 ```
-### Module 03 (Performed in R)
-
-##### Learning objectives 
-- Expression estimation for known genes and transcripts
+ 
+### Expression estimation for known genes and transcripts
 
 ```bash
 module use /project/biocompworkshop/software/modules
