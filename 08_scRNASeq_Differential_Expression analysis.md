@@ -128,6 +128,7 @@ Stay tuned to discover how we can interpret the significance of these genes! The
 # Rerun FindMarkers
 epithelial_de_gsea <- FindMarkers(merged_epithelial, ident.1 = "9", 
   ident.2 = "12", min.pct=0.25, logfc.threshold=0)
+
 # Save this table as a TSV file
 write.table(x = epithelial_de_gsea, 
   file = 'epithelial_de_gsea.tsv', sep='\t')
