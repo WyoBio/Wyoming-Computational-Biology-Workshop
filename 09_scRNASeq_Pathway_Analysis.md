@@ -65,7 +65,9 @@ Next, we will establish our reference. Although `clusterProfiler` typically uses
 Once we have the reference data loaded, we will employ the `enricher` function from the `clusterProfiler` library for the overrepresentation analysis. This function requires inputs such as the DE gene list, the reference database, the statistical method for p-value adjustment, and a p-value cutoff threshold. The enricher function generates an overrepresentation R object that can be used in visualization functions like `barplot()` and `dotplot()` to create typical pathway analysis figures. Additionally, we can utilize the web tool Enrichr for a rapid analysis across multiple databases. For this purpose, we will save the gene list used for the overrepresentation analysis to a TSV file.
 
 ```R
-# Read in the tabula muris gmt file
+# Accessing the Tabula Muris GMT File
+# You can download it from: https://www.gsea-msigdb.org/gsea/msigdb/mouse/collections.jsp?targetSpeciesDB=Mouse#M8
+# Note that you'll need to create a user ID and password to access the file. For convenience, I've uploaded the files to the data vault.
 
 msigdb_m8 <- read.gmt('/cloud/project/data/single_cell_rna/reference_files/m8.all.v2023.2.Mm.symbols.gmt')
 
