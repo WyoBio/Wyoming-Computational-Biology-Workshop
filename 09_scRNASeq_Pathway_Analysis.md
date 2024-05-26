@@ -69,7 +69,7 @@ Once we have the reference data loaded, we will employ the `enricher` function f
 # You can download it from: https://www.gsea-msigdb.org/gsea/msigdb/mouse/collections.jsp?targetSpeciesDB=Mouse#M8
 # Note that you'll need to create a user ID and password to access the file. For convenience, I've uploaded the files to the data vault.
 
-msigdb_m8 <- read.gmt('/cloud/project/data/single_cell_rna/reference_files/m8.all.v2023.2.Mm.symbols.gmt')
+msigdb_m8 <- read.gmt('//project/biocompworkshop/Data_Vault/m8.all.v2023.2.Mm.symbols.gmt')
 
 # Click on the dataframe in RStudio to see how it's formatted- we have 2 columns, #the first with the genesets, and the other with genes that are in that geneset.
 # Try to determine how many different pathways are in this database
