@@ -111,4 +111,15 @@ FeaturePlot(merged, features=c('basal_markers_score1', 'luminal_markers_score1')
 VlnPlot(merged, features=c('basal_markers_score1', 'luminal_markers_score1'), group.by = 'seurat_clusters_res0.8', pt.size=0)
 ```
 
+Interesting! This analysis suggests that cluster 12 consists of basal epithelial cells, while cluster 9 consists of luminal epithelial cells. Next, let's use GSEA to identify distinct biological processes between these clusters.
+
+### GSEA Analysis
+
+For GSEA, we need to start by creating a named vector where the values are the log fold change values, and the names are the gene names. GSEA analysis relies on identifying incremental gene expression changes (not just those that are statistically significant), so we will use our original unfiltered dataframe to get these values. This will be used as input to the `gseGO` function in the clusterProfiler library, which uses gene ontology for GSEA analysis.
+
+The other parameters for the function include:
+- `OrgDb = org.Mm.eg.db`, the organism database from where all the pathways’ genesets will be determined.
+- `ont = "ALL"`, specifies the subontologies, with possible options being BP (Biological Process), MF (Molecular Function), CC (Cellular Compartment), or ALL.
+- `keyType = "SYMBOL"` tells `gseGO` that the genes in our named vector are gene symbols as opposed to Entrez IDs or Ensembl IDs.
+- `pAdjustMethod="BH"` and `pvalueCutoff=0.05` specify the p-value adjustment statistical method to use and the corresponding cutoff.
 
