@@ -123,3 +123,92 @@ The other parameters for the function include:
 - `keyType = "SYMBOL"` tells `gseGO` that the genes in our named vector are gene symbols as opposed to Entrez IDs or Ensembl IDs.
 - `pAdjustMethod="BH"` and `pvalueCutoff=0.05` specify the p-value adjustment statistical method to use and the corresponding cutoff.
 
+```R
+# Read in the epithelial de df we generated previously
+de_gsea_df <- read.csv('outdir_single_cell_rna/epithelial_de_gsea.tsv', sep = '\t')
+
+# If you can't find the file in your session, we have uploaded a version for you
+# de_gsea_df <- read.csv('/cloud/project/data/single_cell_rna/backup_files/epithelial_de_gsea.tsv', sep = '\t')
+
+# Get all the foldchange values from the original dataframe
+
+gene_list <- de_gsea_df$avg_log2FC
+
+# Set names for this vector to gene names
+
+names(gene_list) <- rownames(de_gsea_df)
+
+# Sort list in descending order of log2FC values as that is required by the gseGO function
+
+gene_list = sort(gene_list, decreasing = TRUE)
+
+# Now we can run the gseGO function
+
+gse <- gseGO(geneList=gene_list, 
+             OrgDb = org.Mm.eg.db,
+             ont ="ALL",              
+             keyType = "SYMBOL", 
+             pAdjustMethod = "BH",             
+             pvalueCutoff = 0.05)
+
+# Explore the gse object by opening it in RStudio. 
+# It basically has a record of all the parameters and inputs used for the function, 
+# along with a results dataframe.
+# We can pull this result dataframe out to view it in more detail
+
+gse_result <- gse@result
+```
+
+Upon examining the dataframe, you may observe approximately 900 rows. Similar to the overrepresentation analysis, not all of these rows are likely to hold significant biological relevance. While you can manually sift through the results to identify meaningful pathways, for efficiency, we will focus on subsets within the `gse` object that contain pathways with the term "epithelial" in their names for plotting purposes.
+
+To achieve this, we will first determine the indices of rows containing these values using R's `which` and `grepl` functions. Subsequently, we will subset the results dataframe in the gse object to include only those rows. Notably, all these genesets exhibit negative enrichment scores (indicating downregulation in our putative luminal cell cluster). To facilitate plotting, we will add one index with a positive enrichment score. The plotting functions we will employ include `dotplot`, `cnetplot`, and `heatplot`.
+
+```R
+# Start by grabbing the indices we'll need to subset the `gse` object
+# Epithelial indices from gse object using which and grepl
+
+epithelial_indices <- which(grepl("epithelial", gse@result$Description))
+
+# Index for the most positive enrichment score using which.max()
+positive_index <- which.max(gse@result$enrichmentScore)
+
+# Concatenate these indices to get the list of indices that will be used to subset the gsea object
+
+subset_indices <- c(positive_index,epithelial_indices)
+
+# Now create a new gse_epithelial object and subset the gse object to these indices
+
+gse_epithelial <- gse
+gse_epithelial@result <- gse_epithelial@result[subset_indices,]
+
+# Plot!
+# dotplot - splitting by 'sign' and facet_grid together allow us to separate activated and suppressed pathways
+
+dotplot(gse_epithelial, showCategory=20, split=".sign") + facet_grid(.~.sign) 
+
+# Heatplot - allows us to see the genes that are being considered 
+# for each of the pathways/genesets and their corresponding fold change
+
+heatplot(gse_epithelial, foldChange=gene_list)
+
+# cnetplot - allows us to see the genes along with the various 
+# Pathways/genesets and how they related to each other
+
+cnetplot(gse_epithelial, foldChange=gene_list)
+```
+
+From these findings, we can infer that cluster 9 (putative luminal cells) exhibit reduced expression levels in several pathways associated with epithelial cell proliferation compared to cluster 12 (putative basal cells).
+
+As an additional exercise, let's conduct an overrepresentation and/or GSEA analysis for the DE analysis conducted on CD8 T cells. Since we didn't save the DE results file earlier, you can download the DE file from the provided link first and utilize it for your analysis.
+
+```R
+download.file(url = 'http://genomedata.org/cri-workshop/reference_files/cd8tcells_de_gsea.tsv',
+              destfile = 'outdir_single_cell_rna/cd8tcells_de_gsea.tsv')
+```
+
+Hint:
+
+The comparison between ICB and ICBdT in CD8 T cells might present subtler differences compared to the luminal vs. basal epithelial cell comparison. Consider adjusting the fold-change cutoff for differentially expressed genes, for example, to 0.5.
+
+The M8 cell type signature gene sets may not be the most pertinent choice. Consider downloading a different set of gene sets, such as the MH hallmark gene sets. You can visit the msigdb mouse collections, download the 'Gene Symbols' GMT file for the desired gene sets, upload it to your posit cloud environment, and adjust the relevant R commands to load the gmt file accordingly.
+
