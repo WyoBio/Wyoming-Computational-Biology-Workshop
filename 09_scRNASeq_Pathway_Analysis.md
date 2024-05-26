@@ -132,9 +132,6 @@ The other parameters for the function include:
 # Read in the epithelial de df we generated previously
 de_gsea_df <- read.csv('outdir_single_cell_rna/epithelial_de_gsea.tsv', sep = '\t')
 
-# If you can't find the file in your session, we have uploaded a version for you
-# de_gsea_df <- read.csv('/cloud/project/data/single_cell_rna/backup_files/epithelial_de_gsea.tsv', sep = '\t')
-
 # Get all the foldchange values from the original dataframe
 
 gene_list <- de_gsea_df$avg_log2FC
