@@ -46,7 +46,6 @@ head(de_gsea_df)
 
 ggplot(de_gsea_df, aes(avg_log2FC)) + geom_histogram()
 
-# You can also go one step further and impose a p-value cutoff (say 0.01) and plot the distribution.
 ```
 
 ### Overrepresentation analysis
