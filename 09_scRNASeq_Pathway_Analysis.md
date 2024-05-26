@@ -19,6 +19,7 @@ We will begin by examining the Epcam positive clusters identified in the Differe
 
 ```R
 # Load R libraries
+
 library("Seurat")
 library("ggplot2")
 library("cowplot")
@@ -31,11 +32,83 @@ library("stringr")
 library("enrichplot")
 
 # Read in the epithelial DE file
+
 de_gsea_df <- read.csv('outdir_single_cell_rna/epithelial_de_gsea.tsv', sep = '\t')
 
 head(de_gsea_df)
+
 # Open this file in Rstudio and get a sense for the distribution of foldchange values and see if their p values are significant
 # Alternatively try making a histogram of log2FC values using ggplot and the geom_histogram() function. 
+
 ggplot(de_gsea_df, aes(avg_log2FC)) + geom_histogram()
+
 # You can also go one step further and impose a p-value cutoff (say 0.01) and plot the distribution.
 ```
+
+### Overrepresentation analysis
+
+You may notice that we have several genes with significant fold change values. While fold change does not affect overrepresentation analysis, it can help set thresholds for selecting genes. Since many genes have fold changes greater than +2 or less than -2, we can use this as our cutoff. Additionally, we will set an adjusted p-value cutoff of 0.01. For the overrepresentation analysis, we will filter de_gsea_df based on these log2FC and p-value thresholds to get the list of genes for our analysis.
+
+```R
+# Filter de_gsea_df by subsetting it to only include genes that are significantly DE (pval<0.01) and their absolute log2FC is > 2.
+# The abs(de_gsea_df$avg_log2FC) ensures that we keep both the up and downregulated genes
+
+overrep_df <- de_gsea_df[de_gsea_df$p_val_adj < 0.01 & abs(de_gsea_df$avg_log2FC) > 2,] 
+overrep_gene_list <- rownames(overrep_df)
+```
+
+Next, we will establish our reference. Although `clusterProfiler` typically uses the msigdb reference by default, we will demonstrate how to download a mouse-specific cell type signature reference geneset from msigdb for your analysis. Specifically, we will utilize the M8 geneset from the msigdb mouse collections. By clicking on the `Gene Symbols` link on the right, you can download the dataset and upload it to your workspace. These files are in a `gmt` (gene matrix transposed) format and can be read in using the built-in R function, `read.gmt`.
+
+Once we have the reference data loaded, we will employ the `enricher` function from the `clusterProfiler` library for the overrepresentation analysis. This function requires inputs such as the DE gene list, the reference database, the statistical method for p-value adjustment, and a p-value cutoff threshold. The enricher function generates an overrepresentation R object that can be used in visualization functions like `barplot()` and `dotplot()` to create typical pathway analysis figures. Additionally, we can utilize the web tool Enrichr for a rapid analysis across multiple databases. For this purpose, we will save the gene list used for the overrepresentation analysis to a TSV file.
+
+```R
+# Read in the tabula muris gmt file
+
+msigdb_m8 <- read.gmt('/cloud/project/data/single_cell_rna/reference_files/m8.all.v2023.2.Mm.symbols.gmt')
+
+# Click on the dataframe in RStudio to see how it's formatted- we have 2 columns, #the first with the genesets, and the other with genes that are in that geneset.
+# Try to determine how many different pathways are in this database
+
+overrep_msigdb_m8 <- enricher(gene = overrep_gene_list, TERM2GENE = msigdb_m8, pAdjustMethod = "BH", pvalueCutoff = 0.05)
+
+# Visualize data using the barplot and dotplot functions
+
+barplot(overrep_msigdb_m8, showCategory = 10)
+dotplot(overrep_msigdb_m8, showCategory = 10)
+
+# Save overrep_gene_list to a tsv file (overrep_gene_list is our list of genes and 
+# File is the name we want the file to have when it's saved. 
+# The remaining arguments are optional- row.names=FALSE stops R from adding numbers (effectively an S.No column), 
+# col.names gives our single column TSV a column name, 
+# and quote=FALSE ensures the genes don't have quotes around them which is the default way R saves string values to a TSV)
+
+write.table(x = overrep_gene_list, file = 'outdir_single_cell_rna/epithelial_overrep_gene_list.tsv', row.names = FALSE, col.names = 'overrep_genes', quote=FALSE)
+```
+
+For the Enrichr webtool analysis, we will begin by opening the TSV file in our RStudio session. We'll then copy the genes from the file and paste them directly into the text box provided on the right side of the webtool interface. Upon submission, the webtool will generate multiple barplots depicting enriched pathways. Feel free to explore the results by clicking around the plots. To compare these results with those generated in R, navigate to the `Cell Types` tab at the top and look for `Tabula Muris`.
+
+A crucial aspect of a robust overrepresentation analysis involves leveraging biological expertise alongside the identified pathways to generate hypotheses. Not every pathway displayed in the plots may be relevant, but considering our knowledge of bladder cancer (for this dataset), we can infer that basal and luminal bladder cancers share similar expression profiles with basal and luminal breast cancers. Therefore, the overrepresentation analysis indicating genesets such as 'Tabula Muris senis mammary gland basal cell ageing' and 'Tabula muris senis mammary gland luminal epithelial cell of mammary gland ageing' could suggest that the differences observed in unsupervised clusters 9 and 12 may originate from basal and luminal cells.
+
+To delve deeper into this hypothesis, we can compile a list of basal and luminal markers from literature, calculate a combined score for those genes using Seurat's `AddModuleScore` function, and ascertain if the clusters segregate into basal and luminal categories. For now, we will utilize the same markers defined in the original manuscript of this dataset.
+
+```R
+# Define lists of marker genes
+
+basal_markers <- c('Cd44', 'Krt14', 'Krt5', 'Krt16', 'Krt6a')
+luminal_markers <- c('Cd24a', 'Erbb2', 'Erbb3', 'Foxa1', 'Gata3', 'Gpx2', 'Krt18', 'Krt19', 'Krt7', 'Krt8', 'Upk1a')
+
+# Read in the seurat object if it isn't loaded in your R session
+
+merged <- readRDS('outdir_single_cell_rna/preprocessed_object.rds')
+
+# Use AddModuleScore to calculate a single score that summarizes the gene expression for each list of markers
+
+merged <- AddModuleScore(merged, features=list(basal_markers), name='basal_markers_score')
+merged <- AddModuleScore(merged, features=list(luminal_markers), name='luminal_markers_score')
+
+# Visualize these scores using FeaturePlot and VlnPlots
+FeaturePlot(merged, features=c('basal_markers_score1', 'luminal_markers_score1'))
+VlnPlot(merged, features=c('basal_markers_score1', 'luminal_markers_score1'), group.by = 'seurat_clusters_res0.8', pt.size=0)
+```
+
+
