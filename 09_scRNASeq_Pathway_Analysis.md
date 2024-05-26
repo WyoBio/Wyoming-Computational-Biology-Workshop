@@ -104,7 +104,7 @@ luminal_markers <- c('Cd24a', 'Erbb2', 'Erbb3', 'Foxa1', 'Gata3', 'Gpx2', 'Krt18
 
 # Read in the seurat object if it isn't loaded in your R session
 
-merged <- readRDS('outdir_single_cell_rna/preprocessed_object.rds')
+merged <- readRDS('preprocessed_object.rds')
 
 # Use AddModuleScore to calculate a single score that summarizes the gene expression for each list of markers
 
