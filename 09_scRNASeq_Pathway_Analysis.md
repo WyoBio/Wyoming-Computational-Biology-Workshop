@@ -33,6 +33,10 @@ library("enrichplot")
 
 # Read in the epithelial DE file
 
+datadir = "/project/biocompworkshop/rshukla/scRNASeq_Results"
+
+setwd("/project/biocompworkshop/rshukla/scRNASeq_Results")
+
 de_gsea_df <- read.csv('outdir_single_cell_rna/epithelial_de_gsea.tsv', sep = '\t')
 
 head(de_gsea_df)
