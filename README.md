@@ -18,6 +18,10 @@ Before starting, we will set up the file system required for smooth processing a
 
 Here, we will create directories for storing input and output files and create shortcuts for easy access. Additionally, we will upload all the necessary programs for analysis.
 
+```bash
+salloc --account=biocompworkshop --time=2:00:00 --partition=teton
+```
+
 In the Classroom Folder: `cd /project/biocompworkshop`  
 Navigate to the folder with your name; this is your home folder.  
 Example command: `cd <your-folder>`
