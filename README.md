@@ -76,6 +76,8 @@ module load openjdk/11.0.15_10
 module load picard/2.26.2
 module load bedops/2.4.40
 module load kentutils/1.04.0
+module use /project/biocompworkshop/software/modules
+module load subread/2.0.6
 ```
 
 #### Introduction to Inputs
