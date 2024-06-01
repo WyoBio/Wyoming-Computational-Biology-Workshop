@@ -241,24 +241,25 @@ zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | grep -P "
 
 ```bash
 cd $FASTQ
+```
+
+We will run FastQC on all the `.fastq.gz` files in the current directory and save the resulting quality control reports to the directory specified by the `$FASTQC` variable.
+
+```bash
 fastqc -O $FASTQC/ *.fastq.gz
+```
+Next, we will `cd` to `$FASTQC` and run the MultiQC tool on the current directory (`./`). MultiQC is a tool used for aggregating and visualizing results from `fastqc` and other similar tools. 
+
+```bash
 cd $FASTQC
 multiqc ./
 ```
 
 ## Alignment (to Reference Genome)
 
-Alignment to a reference genome involves mapping DNA or RNA sequences to a known reference genome to identify similarities and differences. 
-This process helps detect mutations, structural variants, and gene expression levels. Tools like BWA, Bowtie, and HISAT2 are commonly used for this purpose.
+Alignment to a reference genome is the process of mapping DNA or RNA sequences to a known reference genome to identify similarities and differences. This crucial step aids in detecting mutations, structural variants, and gene expression levels. Commonly used tools for this purpose include BWA, Bowtie, and HISAT2.
 
-We will focus on alignment using HISAT2. The steps used in HISAT2 are common to most other aligners.
-
-#### Adapter Trim (Optional)
-Details for adapter trim go here.
-
-#### Alignment
-
-HISAT2 uses a graph-based alignment and has succeeded HISAT and TOPHAT2. The output of this step will be a SAM/BAM file for each data set.
+In our focus on alignment, we'll delve into using HISAT2. HISAT2 employs a graph-based alignment approach and has superseded HISAT and TOPHAT2. The steps involved in HISAT2 are similar to those in many other aligners. Upon executing the commands outlined below, each dataset will yield a SAM/BAM file as output.
 
 ```bash
 hisat2 -p 4 --rg-id=UHR_Rep1 --rg SM:UHR --rg LB:UHR_Rep1_ERCC-Mix1 --rg PL:ILLUMINA --rg PU:CXX1234-ACTGAC.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/UHR_Rep1.sam 
@@ -269,6 +270,7 @@ hisat2 -p 4 --rg-id=HBR_Rep1 --rg SM:HBR --rg LB:HBR_Rep1_ERCC-Mix2 --rg PL:ILLU
 hisat2 -p 4 --rg-id=HBR_Rep2 --rg SM:HBR --rg LB:HBR_Rep2_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-GACACT.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep2.sam 
 hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz -S $BAM_P/HBR_Rep3.sam 
 ```
+
 HISAT2 options specified above:
 - `-p 4` tells HISAT2 to use 4 CPUs for bowtie alignments.
 - `–rna-strandness RF` specifies strandness of RNAseq library. We will specify RF since the TruSeq strand-specific library was used to make these libraries. See here for options.
@@ -307,7 +309,8 @@ hisat2 -p 4 --rg-id=HBR_Rep2 --rg SM:HBR --rg LB:HBR_Rep2_ERCC-Mix2 --rg PL:ILLU
 hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/HBR_Rep3.bam 
 ```
 
-Merge HISAT2 BAM files
+### Merge HISAT2 BAM files
+
 Make a single BAM file combining all UHR data and another for all HBR data. This could be done using picard-tools.
 
 ```bash
