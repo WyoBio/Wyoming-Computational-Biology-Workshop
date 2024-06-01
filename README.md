@@ -186,8 +186,22 @@ Indexing is a crucial step before performing sequence alignment, ensuring that t
 ```bash
 echo $GTF
 cd $GTF
+```
+First, we will extract splice site information from the chr22_with_ERCC92.gtf file and writes it to a file named `splicesites.tsv` in the directory specified by the INDEX environment variable.
+
+```bash
 hisat2_extract_splice_sites.py chr22_with_ERCC92.gtf > $INDEX/splicesites.tsv
+```
+
+Next, we will extract exon information from the `chr22_with_ERCC92.gtf` file and write it to a file named `exons.tsv` in the directory specified by the INDEX environment variable.
+
+```bash
 hisat2_extract_exons.py chr22_with_ERCC92.gtf > $INDEX/exons.tsv
+```
+
+Lastly, we will build HISAT2 index for the `chr22_with_ERCC92.fa` reference genome. It uses 4 CPU threads (-p 4), the splice sites information from `splicesites.tsv`, and the exon information from `exons.tsv`. The index files are created in the directory specified by the INDEX environment variable with a base name of chr22.
+
+```bash
 hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
 ```
 
@@ -197,9 +211,29 @@ hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE
 echo $FASTQ
 cd $FASTQ
 wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar
+```
+
+Lets extract all files from the HBR_UHR_ERCC_ds_5pc.tar archive and display the names of the files as they are extracted
+
+```bash
 tar -xvf HBR_UHR_ERCC_ds_5pc.tar
+```
+
+Check and verify whether the files are successfully extracted.
+
+```bash
 ls
+```
+
+Let's decompress the specified FASTQ file and then display the first 8 lines of the decompressed file.
+
+```bash
 zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | head -n 8
+```
+
+Let's decompresses the specified FASTQ file, searche for lines that start with @HWI (which is typical of Illumina read identifiers), and count how many such lines exist. This effectively will count the number of reads in the file that match the specified pattern.
+
+```bash
 zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | grep -P "^\@HWI" | wc -l
 ```
 
