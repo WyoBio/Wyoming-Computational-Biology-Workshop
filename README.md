@@ -404,6 +404,8 @@ multiqc ./
  
 ### Expression estimation for known genes and transcripts
 
+In the final step of our HPC process, we will conduct read counting on non-merged paired-end BAM files, utilizing the genomic annotation from the provided GTF file (`chr22_with_ERCC92.gtf`). The count results will be saved to `featurecounts.txt` within the `counts` directory. The `[Rr]ep[123].bam` regex pattern selectively identifies the unmerged BAM files based on their filenames.
+
 ```bash
 echo $BAM_P
 cd $BAM_P
@@ -411,16 +413,20 @@ cd $BAM_P
 featureCounts -p -a $GTF/chr22_with_ERCC92.gtf -o $COUNTS/featurecounts.txt $BAM_P/*[Rr]ep[123].bam
 ```
 
-we will get two files: `featurecounts.txt` & `featurecounts.txt.summary`
+we will get two files: `featurecounts.txt` & `featurecounts.txt.summary` in the `counts` directory.
 
 ```bash
 echo $COUNTS
 cd $COUNTS
 
 cat featurecounts.txt | less
+```
 
-use `q` to come out of the `cat` command.
+Use `q` to come out of the `cat` command.
 
+To enhance readability, we'll extract the first field and fields starting from the seventh onwards from each line. This modified content will then be displayed interactively using the `less` pager for better viewing.
+
+```bash
 cat featurecounts.txt | cut -f1,7- | less
 ```
  
