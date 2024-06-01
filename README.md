@@ -18,10 +18,6 @@ Before starting, we will set up the file system required for smooth processing a
 
 Here, we will create directories for storing input and output files and create shortcuts for easy access. Additionally, we will upload all the necessary programs for analysis.
 
-```bash
-salloc --account=biocompworkshop --time=2:00:00 --partition=teton -c 4
-```
-
 In the Classroom Folder: `cd /project/biocompworkshop`  
 Navigate to the folder with your name; this is your home folder.  
 Example command: `cd <your-folder>`
@@ -46,6 +42,13 @@ mkdir DE_Results
 mkdir Pathway_Results
 mkdir PP_Results
 mkdir scRNASeq_Results
+```
+#### Requesting an Interactive Session 
+
+Now we will request an interactive session on the SLURM cluster under the biocompworkshop account. The session will last for up to 4 hours, use the teton partition, and request 4 CPU cores. Once the resources are allocated, you will get an interactive shell prompt on one of the compute nodes where you can run your commands interactively.
+
+```bash
+salloc --account=biocompworkshop --time=2:00:00 --partition=teton -c 4
 ```
 
 #### Create path shortcuts 
