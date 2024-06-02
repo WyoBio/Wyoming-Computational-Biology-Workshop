@@ -467,7 +467,7 @@ We'll use the same example dataset and run it using parallel processing. First, 
 
 #### Generating list of hisat2 commands
 
-You can use the following script by pasting it into any text editor (vi or nano) and saving it as a .bash file. For this session, it has been provided as `hisat2_cmd.bash`. This script automates the generation of alignment commands for RNA-seq data using hisat2 and samtools.
+You can use the following script by pasting it into any text editor (vi or nano) and saving it as a .bash file. For this session, it has been provided as `hisat2_cmd.bash` in the `Data_Vault` folder. This script automates the generation of alignment commands for RNA-seq data using hisat2 and samtools.
 
 ```bash
 #!/bin/bash
@@ -560,10 +560,17 @@ Here's a brief breakdown of what each part of the script does:
    - Ends the loop.
 
 ### Execute the script
-To execute the `hisat2_cmd.bash` you might have to change the permission and then run it using the following command:
+
+To execute the `hisat2_cmd.bash` script, we will first copy it from `Data_Vault` to our home directory and then execute it. I have changed the permissions, but if it has not been changed, you can use `chmod +x hisat2_cmd.bash` to do so.
 
 ```bash
-chmod +x hisat2_cmd.bash
+echo $myHOME
+cd $myHOME
+
+cp /project/biocompworkshop/Data_Vault/hisat2_cmd.bash .
+
+ls
+
 ./hisat2_cmd.bash > cmd.list
 ```
 ### Run the command list in parallel
@@ -592,9 +599,15 @@ The script does the following:
 - Uses GNU Parallel to execute commands listed in /project/biocompworkshop/Data_Vault/cmd.list concurrently, with up to 8 commands running at the same time.
 
 ### Execute the script
-To run the script you might have to change the permission and then run it using the following command:
+
+To execute the `ParallelProcessing.sh` script, we will first copy it from `Data_Vault` to our home directory and then execute it. Again, I have changed the permissions, but if it has not been changed, you can use `chmod +x ParallelProcessing.sh` to do so.
+
 ```bash
-chmod +x ParallelProcessing.sh
+echo $myHOME
+cd $myHOME
+
+cp /project/biocompworkshop/Data_Vault/ParallelProcessing.sh .
+
 sbatch ParallelProcessing.sh
 ```
 
