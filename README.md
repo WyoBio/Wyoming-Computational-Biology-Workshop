@@ -373,31 +373,60 @@ cd fastqc
 multiqc ./
 ```
 
-We can use Picard to generate RNA-seq specific quality metrics and figures.
+We can use Picard to generate RNA-seq specific quality metrics and figures. First, we need to create the necessary input files, starting with a `.dict` file for our reference.
+
+- A `.dict` file, or sequence dictionary file, is used in bioinformatics workflows, particularly those involving tools like Picard and GATK (Genome Analysis Toolkit). It contains metadata about the reference genome sequences, such as the names and lengths of each chromosome or contig, and their order. This information helps tools to interpret and process genomic data correctly.
 
 ```bash
-# First, we can generate the necessary input files for picard.
 echo $REFERENCE
 cd $REFERENCE
 
-# We will first create a .dict file for our reference
 java -jar $PICARD CreateSequenceDictionary -R chr22_with_ERCC92.fa -O chr22_with_ERCC92.dict
+```
 
+We will now create a BED file of the location of ribosomal sequences in our reference by first extracting them from the GTF and then converting to BED. Note that here we pull all the "rrna" transcripts from the GTF. This strategy is suitable for the whole transcriptome, but on chr22, there is very little "rrna" content, leading to 0 coverage for all samples. Therefore, we are also adding a single protein-coding ribosomal gene "RRP7A" (normally, we would not do this).
+
+- A BED (Browser Extensible Data) file is used to store genomic coordinates of features.
+
+```bash
 echo $GTF
 cd $GTF
 grep --color=none -i -P "rrna|rrp7a" $GTF/chr22_with_ERCC92.gtf > ref_ribosome.gtf
 gff2bed < ref_ribosome.gtf > ref_ribosome.bed
+```
+
+Create interval list file for the location of ribosomal sequences in our reference
+
+```bash
 java -jar $PICARD BedToIntervalList -I ref_ribosome.bed -O ref_ribosome.interval_list -SD $REFERENCE/chr22_with_ERCC92.dict
+```
 
+Create a genePred file for our reference transcriptome.
+
+- A GENPHRED file stores quality scores for each base in a sequence, representing the accuracy of the base calling.
+
+```bash
 gtfToGenePred -genePredExt chr22_with_ERCC92.gtf chr22_with_ERCC92.ref_flat.txt
+```
 
+Reformat the genePred file
+
+```bash
 cat chr22_with_ERCC92.ref_flat.txt | awk '{print $12"\t"$0}' | cut -d$'\t' -f1-11 > tmp.txt
 mv tmp.txt chr22_with_ERCC92.ref_flat.txt
+```
 
+Finally, we will use picard tools to collect RNA-seq metrics for each BAM file and save the results in the picard directory.
+
+```bash
 cd $BAM_P
 mkdir picard
 find *Rep*.bam -exec echo java -jar $PICARD CollectRnaSeqMetrics I={} O=picard/{}.RNA_Metrics REF_FLAT=$GTF/chr22_with_ERCC92.ref_flat.txt STRAND=SECOND_READ_TRANSCRIPTION_STRAND RIBOSOMAL_INTERVALS=$GTF/ref_ribosome.interval_list \; | sh
+```
 
+We can summarize and generate figures for alignment QC using multiqc.
+
+```bash
 cd picard
 multiqc ./
 ```
