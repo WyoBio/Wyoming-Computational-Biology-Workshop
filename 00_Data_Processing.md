@@ -608,6 +608,53 @@ cd $myHOME
 
 cp /project/biocompworkshop/Data_Vault/ParallelProcessing.sh .
 
+ls
+
 sbatch ParallelProcessing.sh
 ```
+
+The `sbatch ParallelProcessing.sh` command will create log file named `slurm-xxxxxxxx.out` file which will have all details of the commands you are running. Where `x` represents some number. You can view this file using `cat` command. 
+
+```bash
+cat slurm-xxxxxxxx.out
+```
+
+To see the status of jobs in the queue, use the squeue command:
+
+View All Jobs:
+
+```bash
+squeue
+```
+
+View Jobs for a Specific User:
+
+```bash
+squeue -u rshukla
+```
+
+Detailed Job Information:
+
+```bash
+scontrol show job <job_id>
+```
+
+To terminate a job that is currently running or queued, use the scancel command:
+
+```bash
+scancel job_id
+```
+
+Terminate All Jobs for a Specific User:
+
+```bash
+scancel -u rshukla
+```
+
+
+
+
+
+
+
 
