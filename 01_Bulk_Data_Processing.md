@@ -108,7 +108,7 @@ Definitions:
 
 **GTF (.gtf) file:** - A common file format referred to as Gene Transfer Format used to store gene and transcript annotation information. You can learn more about this format [here](http://genome.ucsc.edu/FAQ/FAQformat#format4).
 
-#### Reference Genomes
+## Reference Genomes
 
 ```bash
 echo $REFERENCE
@@ -145,7 +145,7 @@ What is the count of each base in the entire reference genome file (skipping the
 time cat chr22_with_ERCC92.fa | grep -v ">" | awk '{for (i=1; i<=NF; i++){a[$i]++}}END{for (i in a){print a[i], i}}' FS= - | sort -k 2 | column -t
 ```
 
-#### Annotation
+## Annotation
 
 ```bash
 echo $GTF
@@ -179,7 +179,7 @@ Now view the structure of a single transcript in GTF format. Press `q` to exit t
 grep ENST00000342247 $GTF/chr22_with_ERCC92.gtf | less -p "exon\s" -S
 ```
 
-#### Indexing
+## Indexing
 
 Indexing is a crucial step before performing sequence alignment, ensuring that the alignment tool can quickly and accurately find the best matches for each read in the reference genome. It involves creating a data structure that allows for efficient mapping of sequencing reads to the reference genome by preprocessing the reference genome to generate an index, enabling quick lookup and alignment of sequences.
 
@@ -205,7 +205,7 @@ Lastly, we will build HISAT2 index for the `chr22_with_ERCC92.fa` reference geno
 hisat2-build -p 4 --ss $INDEX/splicesites.tsv --exon $INDEX/exons.tsv $REFERENCE/chr22_with_ERCC92.fa $INDEX/chr22
 ```
 
-#### RNAseq Data
+## RNAseq Data
 
 ```bash
 echo $FASTQ
@@ -237,7 +237,7 @@ Let's decompresses the specified FASTQ file, searche for lines that start with @
 zcat UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz | grep -P "^\@HWI" | wc -l
 ```
 
-#### Pre-alignment QC
+## Pre-alignment QC
 
 ```bash
 cd $FASTQ
@@ -309,7 +309,7 @@ You can pipe `|` the hisat2 output to samtools to get the .bam file
 # hisat2 -p 4 --rg-id=HBR_Rep3 --rg SM:HBR --rg LB:HBR_Rep3_ERCC-Mix2 --rg PL:ILLUMINA --rg PU:CXX1234-ACACTG.1 -x $INDEX/chr22 --dta --rna-strandness RF -1 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz -2 $FASTQ/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz | samtools view -bS - | samtools sort > $BAM_P/HBR_Rep3.bam 
 ```
 
-### Merge HISAT2 BAM files
+## Merge HISAT2 BAM files
 
 Make a single BAM file combining all UHR data and another for all HBR data. This could be done using picard-tools.
 
@@ -326,7 +326,7 @@ ls -l *.bam | wc -l
 ls -l *.bam
 ```
 
-#### Alignment QC
+## Alignment QC
 
 We will use `samtools flagstat` to get a basic summary of an alignment.
 
@@ -431,7 +431,7 @@ cd picard
 multiqc ./
 ```
  
-### Expression estimation for known genes and transcripts
+## Expression estimation for known genes and transcripts
 
 In the final step of our HPC process, we will conduct read counting on non-merged paired-end BAM files, utilizing the genomic annotation from the provided GTF file (`chr22_with_ERCC92.gtf`). The count results will be saved to `featurecounts.txt` within the `counts` directory. The `[Rr]ep[123].bam` regex pattern selectively identifies the unmerged BAM files based on their filenames.
 
@@ -459,7 +459,7 @@ To enhance readability, we'll extract the first field and fields starting from t
 cat featurecounts.txt | cut -f1,7- | less
 ```
  
-### Parallel Processing
+## Parallel Processing
 
 We are working with a small number of samples specifically prepared to study chromosome 22. In a real-world analysis, you will typically have much larger datasets, and aligning a single file can take hours, while aligning all files could take days. To expedite this process, we will employ parallel processing.
 
