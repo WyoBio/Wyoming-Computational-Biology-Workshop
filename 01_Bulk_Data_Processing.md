@@ -12,7 +12,7 @@ In this section, we will:
 4. Check the alignment quality.
 5. Obtain the expression values (counts) for each feature (gene or transcript).
 
-Before starting, we will set up the file system required for smooth processing and load all the necessary modules for the data processing steps. Additionally, we will cover processing techniques needed when dealing with several large files.
+Before starting, we will set up the file system required for smooth processing and load all the necessary modules for the data processing steps. Additionally, we will cover parallel processing techniques needed when dealing with several large files.
 
 ## Setup
 
@@ -53,6 +53,8 @@ salloc --account=biocompworkshop --time=2:00:00 --partition=teton -c 4
 ```
 
 #### Create path shortcuts 
+
+We will now create environment variables, which are useful for storing paths, configuration options, and other values you might need to reference multiple times in your scripts or commands. Using environment variables makes your scripts more flexible and easier to maintain.
 
 ```bash
 export myHOME=/project/biocompworkshop/rshukla 
