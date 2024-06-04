@@ -41,7 +41,7 @@ setwd(datadir)
 ```R
 rawdata=read.table("featurecounts.txt", header=TRUE, stringsAsFactors=FALSE, row.names=1)
 colnames(rawdata)
-rawdata <- rawdata[,-c(1,2,3,4,5,6,10)] # Remove columns which are not required
+rawdata <- rawdata[,-c(1,2,3,4,5)] # Remove columns which are not required
 ```
 ### Extract and edit column names
 By default, featurecount outputs the sample name as the file name along with the file path. We will modify this to ensure the correct sample names are used.
