@@ -65,11 +65,11 @@ table(merged$seurat_clusters_res0.8)
 table(merged_epithelial$seurat_clusters_res0.8)
 ```
 
-Next, we'll utilize Seurat’s FindMarkers function to conduct a differential expression analysis between the two groups. To use FindMarkers effectively, we also need to use SetIdent to adjust the default ‘Ident’ to the metadata column we want for our comparison. For additional details on FindMarkers, refer to this resource.
+Next, we'll utilize Seurat’s `FindMarkers` function to conduct a differential expression analysis between the two groups. To use `FindMarkers` effectively, we also need to use `SetIdent` to adjust the default ‘Ident’ to the metadata column we want for our comparison. 
 
-Please note that in this analysis, we are using FindMarkers to compare clusters 9 and 12. The standard syntax of FindMarkers requires that we designate each group of cells as ident.1 and ident.2. The output of FindMarkers is a table containing genes that are differentially expressed along with their corresponding log2FC values. The log2FC direction is based on ident.1 in relation to ident.2; genes upregulated in ident.1 have a positive log2FC, while those downregulated have a negative log2FC. 
+Please note that in this analysis, we are using `FindMarkers` to compare clusters `9` and `12`. The standard syntax of `FindMarkers` requires that we designate each group of cells as `ident.1` and `ident.2`. The output of `FindMarkers` is a table containing genes that are differentially expressed along with their corresponding `log2FC` values. The `log2FC` direction is based on `ident.1` in relation to `ident.2`; genes upregulated in `ident.1` have a positive `log2FC`, while those downregulated have a negative `log2FC`. 
 
-We include the min.pct=0.25 argument to test genes expressed in at least 25% of cells in either ident.1 or ident.2 groups, reducing false positives compared to the default value of 1%. Additionally, the logfc.threshold=0.1 parameter ensures our results only include genes with a fold change greater than 0.1 or less than -0.1. Adjusting these parameters can improve function efficiency by reducing the number of genes tested.
+We include the `min.pct=0.25` argument to test genes expressed in at least 25% of cells in either `ident.1` or `ident.2` groups, reducing false positives compared to the default value of 1%. Additionally, the `logfc.threshold=0.1` parameter ensures our results only include genes with a fold change greater than 0.1 or less than -0.1. Adjusting these parameters can improve function efficiency by reducing the number of genes tested.
 
 ```R
 # Carry out DE analysis between both groups
