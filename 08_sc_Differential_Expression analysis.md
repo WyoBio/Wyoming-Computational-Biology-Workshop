@@ -179,7 +179,7 @@ merged_tcells@meta.data$experimental_condition[merged_tcells@meta.data$orig.iden
 table(merged_tcells@meta.data$orig.ident, merged_tcells@meta.data$experimental_condition)
 ```
 
-Now that we have established the experimental conditions, we can proceed to compare the T cells from both groups. Initially, we will utilize `FindMarkers` with parameters similar to the previous analysis to observe the changes in ICBdT compared to ICB. Following this, we will filter the dataframe to include only significant genes and examine the top five genes that are most upregulated and downregulated based on log2FC.
+Now that we have established the experimental conditions, we can proceed to compare the T cells from both groups. Initially, we will utilize `FindMarkers` with parameters similar to the previous analysis to observe the changes in ICBdT compared to ICB. Following this, we will filter the dataframe to include only significant genes and examine the top five genes that are most upregulated and downregulated based on `log2FC`.
 
 ```R
 # Carry out DE analysis between both groups
