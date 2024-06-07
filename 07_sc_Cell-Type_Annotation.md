@@ -96,7 +96,7 @@ By examining the ont labels, we observe that the subtypes are now linked to Cell
 ### Utilizing the ImmGen cell reference with our dataset
 
 ```R
-#generate predictions for our seurat object
+# Generate predictions for our seurat object
 predictions_main = SingleR(test = GetAssayData(merged), 
                       ref = ref_immgen,
                       labels = ref_immgen$label.main)
