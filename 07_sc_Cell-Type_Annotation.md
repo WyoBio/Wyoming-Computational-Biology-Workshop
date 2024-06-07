@@ -128,7 +128,7 @@ Rep1_ICBdT_AAACCTGCATGCCACG-1 0.0399733:0.0229926:0.0669236:... Fibroblasts  0.2
 - The **scores** column includes a matrix for each barcode, indicating SingleR's confidence in assigning each cell type to the corresponding barcode row.
   - Each cell within this matrix reflects the level of confidence for a specific cell type assignment.
 - The **labels** column represents SingleR's most confident assignment for each barcode, highlighting the predominant cell type identification.
-- The **delta** column encompasses the "delta" value per cell, indicating the discrepancy between the score for the assigned label and the median score across all labels.
+- The **delta** column encompasses the "delta" value per cell, indicating the difference between the score for the assigned label and the median score across all labels.
   - A small delta suggests uniform confidence across labels, possibly indicating less meaningful assigned labels.
 - SingleR can eliminate cells with low delta values caused by:
   - Ambiguous assignments with closely related reference labels.
