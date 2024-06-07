@@ -2,9 +2,9 @@
 
 In this section, we'll utilize the previously generated Seurat object that has undergone various preprocessing steps, clustering, and cell typing. We'll use this object for gene expression and differential expression analyses. Two key differences in the differential expression analyses conducted in this module are:
 
-- **Identification of Epithelial Cells:** We'll start by identifying epithelial cells in our data using Epcam expression as a marker, considering that tumor cells should exhibit epithelial characteristics. Subsequently, we'll perform a differential expression analysis within the Epcam-positive population(s).
+- **Epithelial Cells Comparison:** We'll start by identifying epithelial cells in our data using Epcam expression as a marker, considering that tumor cells should exhibit epithelial characteristics. Subsequently, we'll perform a differential expression analysis within the Epcam-positive population(s).
 
-- **Comparison of T Cell Phenotypes:** Another analysis will compare T cell populations in mice treated with ICB therapy against those with T cells depleted, which underwent ICB therapy. This comparison aims to identify differences in T-cell phenotypes related to the treatment.
+- **Cell-Type-Specific Phenotype Comparison:** Another analysis will compare T cell populations in mice treated with ICB therapy against those with T cells depleted, which underwent ICB therapy. This comparison aims to identify differences in T-cell phenotypes related to the treatment.
 
 ### Setup
 
@@ -77,9 +77,9 @@ merged_epithelial <- SetIdent(merged_epithelial, value = "seurat_clusters_res0.8
 epithelial_de <- FindMarkers(merged_epithelial, ident.1 = "9", ident.2 = "12", min.pct=0.25, logfc.threshold=0.1) #how cluster 9 changes wrt cluster 12
 ```
 
-Upon opening the dataframe "epithelial_de" in your RStudio session, you'll notice it contains genes listed as row names, along with the following columns: p_val, avg_log2FC, pct.1, pct.2, and p_val_adj. The p-values are determined by the test applied during the FindMarkers analysis, while the adjusted p-value reflects the Bonferroni correction test. The columns pct.1 and pct.2 represent the percentage of cells where each gene is detected in the ident.1 and ident.2 groups, respectively.
+Upon opening the dataframe "epithelial_de" in your RStudio session, you'll notice it contains genes listed as row names, along with the following columns: `p_val`, `avg_log2FC`, `pct.1`, `pct.2`, and `p_val_adj`. The p-values are determined by the test applied during the `FindMarkers` analysis, while the adjusted p-value reflects the Bonferroni correction test. The columns `pct.1` and `pct.2` represent the percentage of cells where each gene is detected in the `ident.1` and `ident.2` groups, respectively.
 
-We can proceed by filtering this dataframe to include only differentially expressed (DE) genes with a significant p-value. Then, we can further filter the resulting dataframe to include only the top 20 genes with the highest absolute log2FC among the significant DE genes. Considering the absolute log2FC enables us to identify both upregulated and downregulated genes.
+We can proceed by filtering this dataframe to include only differentially expressed (DE) genes with a significant p-value. Then, we can further filter the resulting dataframe to include only the top 20 genes with the highest absolute `log2FC` among the significant DE genes. Considering the absolute `log2FC` enables us to identify both upregulated and downregulated genes.
 
 ```R
 # Restrict differentially expressed genes to those with an adjusted p-value less than 0.001 
@@ -90,9 +90,9 @@ epithelial_de_sig %>%
   top_n(n = 20, wt = abs(avg_log2FC)) -> epithelial_de_sig_top20
 ```
 
-The dataframe "epithelial_de_sig_top20" contains the top 20 genes with the most significant differential expression based on log2FC.
+The dataframe "epithelial_de_sig_top20" contains the top 20 genes with the most significant differential expression based on `log2FC`.
 
-We have multiple options for visualizing the differentially expressed genes. We will begin with the Violin and Feature plots as previously discussed. Additionally, we can use a DotPlot to display the differential expression, showing both the average expression of a gene and the percentage of cells expressing it. Apart from these Seurat functions, we can create a volcano plot using the EnhancedVolcano package. In the volcano plot, we can utilize the unfiltered DE results to color and label genes based on specified parameters (pCutoff, FCcutoff).
+We have multiple options for visualizing the differentially expressed genes. We will begin with the Violin and Feature plots as previously discussed. Additionally, we can use a DotPlot to display the differential expression, showing both the average expression of a gene and the percentage of cells expressing it. Apart from these Seurat functions, we can create a volcano plot using the `EnhancedVolcano` package. In the volcano plot, we can utilize the unfiltered DE results to color and label genes based on specified parameters (`pCutoff`, `FCcutoff`).
 
 ```R
 # Get list of top 20 DE genes for ease
@@ -136,7 +136,7 @@ write.table(x = epithelial_de_gsea,
 
 ### Differential gene expression analysis in T cells.
 
-For the analysis focusing on T cells, our goal is to compare T cells from mice treated with ICB to T cells from mice with some of their T cells depleted and treated with ICB (ICBdT). Initially, we will narrow down our merged object to exclusively include T cells. This involves consolidating various T cell annotations from the cell typing section. We'll begin by identifying all possible cell types available and selecting those related to T cells. Afterward, we'll use SetIdent to designate the cell type metadata column and subset the data to include only the cell types corresponding to T cells. Lastly, we'll verify that the subsetting process was successful as expected.
+For the analysis focusing on T cells, our goal is to compare T cells from mice treated with ICB to T cells from mice with some of their T cells depleted and treated with ICB (ICBdT). Initially, we will narrow down our merged object to exclusively include T cells. This involves consolidating various T cell annotations from the cell typing section. We'll begin by identifying all possible cell types available and selecting those related to T cells. Afterward, we'll use `SetIdent` to designate the cell type metadata column and subset the data to include only the cell types corresponding to T cells. Lastly, we'll verify that the subsetting process was successful as expected.
 
 ```R
 # Check all the annotated celltypes
@@ -156,9 +156,9 @@ table(merged$immgen_singler_main)
 table(merged_tcells$immgen_singler_main)
 ```
 
-Let's proceed with comparing T cells from mice treated with ICB versus those treated with ICBdT. Initially, we must differentiate between the ICB and ICBdT cells. Begin by selecting the object in RStudio and expanding the meta.data section to view the columns and the type of data they contain.
+Let's proceed with comparing T cells from mice treated with ICB versus those treated with ICBdT. Initially, we must differentiate between the ICB and ICBdT cells. Begin by selecting the object in RStudio and expanding the `meta.data` section to view the columns and the type of data they contain.
 
-It appears that the orig.ident column contains information about both the condition and replicates. However, for this differential expression (DE) analysis, we require a meta.data column that consolidates the replicates for each condition. Therefore, our goal is to merge the replicates of each condition into a unified category.
+It appears that the `orig.ident` column contains information about both the condition and replicates. However, for this differential expression (DE) analysis, we require a `meta.data` column that consolidates the replicates for each condition. Therefore, our goal is to merge the replicates of each condition into a unified category.
 
 ```R
 # We'll start by checking the possible names each replicate has.
@@ -179,7 +179,7 @@ merged_tcells@meta.data$experimental_condition[merged_tcells@meta.data$orig.iden
 table(merged_tcells@meta.data$orig.ident, merged_tcells@meta.data$experimental_condition)
 ```
 
-Now that we have established the experimental conditions, we can proceed to compare the T cells from both groups. Initially, we will utilize FindMarkers with parameters similar to the previous analysis to observe the changes in ICBdT compared to ICB. Following this, we will filter the dataframe to include only significant genes and examine the top five genes that are most upregulated and downregulated based on log2FC.
+Now that we have established the experimental conditions, we can proceed to compare the T cells from both groups. Initially, we will utilize `FindMarkers` with parameters similar to the previous analysis to observe the changes in ICBdT compared to ICB. Following this, we will filter the dataframe to include only significant genes and examine the top five genes that are most upregulated and downregulated based on log2FC.
 
 ```R
 # Carry out DE analysis between both groups
@@ -197,9 +197,9 @@ tcells_de_sig %>%
   top_n(n = 5, wt = avg_log2FC)
 ```
 
-The gene with the highest downregulation in the ICBdT condition in terms of fold change is Cd4. This finding is logical since the monoclonal antibody (GK1.5) used for T cell depletion specifically targets CD4 T cells. Further information about the antibody can be found [here](link to the antibody details).
+The gene with the highest downregulation in the ICBdT condition in terms of fold change is `Cd4`. This finding is logical since the monoclonal antibody (GK1.5) used for T cell depletion specifically targets CD4 T cells. 
 
-It's noteworthy that among the list of upregulated genes, Cd8b1 appears. It might be intriguing to investigate whether the CD8 T cells' phenotype alters depending on the treatment condition. Let's proceed by narrowing down the object to include only CD8 T cells, identifying differentially expressed (DE) genes to observe how ICBdT CD8 T cells differ from ICB CD8 T cells, and visualize these results similar to our previous approach.
+It's noteworthy that among the list of upregulated genes, `Cd8b1` appears. It might be intriguing to investigate whether the `CD8` T cells' phenotype alters depending on the treatment condition. Let's proceed by narrowing down the object to include only `CD8` T cells, identifying differentially expressed (DE) genes to observe how ICBdT `CD8` T cells differ from ICB `CD8` T cells, and visualize these results similar to our previous approach.
 
 ```R
 # Subset object to CD8 T cells. Since we already showed how to subset cells using the clusters earlier, 
@@ -244,7 +244,7 @@ EnhancedVolcano(cd8tcells_de,
   colAlpha = 0.3)
 ```
 
-Now, you can begin conducting literature searches on some of these genes. You may discover that antigen-specific memory CD8 T cells exhibit increased expression of Bcl2 and Cdk8.
+Now, you can begin conducting literature searches on some of these genes. You may discover that antigen-specific memory `CD8` T cells exhibit increased expression of `Bcl2` and `Cdk8`.
 
 Alternatively, we can utilize gene set and pathway analyses to explore the potential cellular processes in which these cells may be involved.
 
