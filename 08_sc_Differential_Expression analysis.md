@@ -16,7 +16,7 @@ library(dplyr)
 library(EnhancedVolcano)
 library(presto)
 
-datadir =
+datadir = "/project/biocompworkshop/rshukla/scRNASeq_Results"
 setwd(datadir)
 merged <- readRDS('preprocessed_object.rds')
 ```
