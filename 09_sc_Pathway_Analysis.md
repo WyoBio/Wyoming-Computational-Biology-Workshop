@@ -60,9 +60,9 @@ overrep_df <- de_gsea_df[de_gsea_df$p_val_adj < 0.01 & abs(de_gsea_df$avg_log2FC
 overrep_gene_list <- rownames(overrep_df)
 ```
 
-Next, we will establish our reference. Although `clusterProfiler` typically uses the msigdb reference by default, we will demonstrate how to download a mouse-specific cell type signature reference geneset from msigdb for your analysis. Specifically, we will utilize the M8 geneset from the msigdb mouse collections. By clicking on the `Gene Symbols` link on the right, you can download the dataset and upload it to your workspace. These files are in a `gmt` (gene matrix transposed) format and can be read in using the built-in R function, `read.gmt`.
+Next, we will establish our reference. Although `clusterProfiler` typically uses the msigdb reference by default, we will demonstrate how to download a mouse-specific cell type signature reference geneset from msigdb for your analysis. Specifically, we will utilize the M8 genesets from the msigdb mouse collections. These files are in a `gmt` (gene matrix transposed) format and can be read using the built-in R function, `read.gmt`.
 
-Once we have the reference data loaded, we will employ the `enricher` function from the `clusterProfiler` library for the overrepresentation analysis. This function requires inputs such as the DE gene list, the reference database, the statistical method for p-value adjustment, and a p-value cutoff threshold. The enricher function generates an overrepresentation R object that can be used in visualization functions like `barplot()` and `dotplot()` to create typical pathway analysis figures. Additionally, we can utilize the web tool Enrichr for a rapid analysis across multiple databases. For this purpose, we will save the gene list used for the overrepresentation analysis to a TSV file.
+Once we have the reference data loaded, we will employ the `enricher` function from the `clusterProfiler` library for the overrepresentation analysis. This function requires inputs such as the DE gene list, the reference database, the statistical method for p-value adjustment, and a p-value cutoff threshold. The enricher function generates an overrepresentation R object that can be used in visualization functions like `barplot()` and `dotplot()` to create typical pathway analysis figures. Additionally, we can utilize the web tool Enrichr for a rapid analysis across multiple databases. 
 
 ```R
 # Accessing the Tabula Muris GMT File
@@ -87,7 +87,7 @@ dotplot(overrep_msigdb_m8, showCategory = 10)
 # col.names gives our single column TSV a column name, 
 # and quote=FALSE ensures the genes don't have quotes around them which is the default way R saves string values to a TSV)
 
-write.table(x = overrep_gene_list, file = 'outdir_single_cell_rna/epithelial_overrep_gene_list.tsv', row.names = FALSE, col.names = 'overrep_genes', quote=FALSE)
+write.table(x = overrep_gene_list, file = 'epithelial_overrep_gene_list.tsv', row.names = FALSE, col.names = 'overrep_genes', quote=FALSE)
 ```
 
 For the Enrichr webtool analysis, we will begin by opening the TSV file in our RStudio session. We'll then copy the genes from the file and paste them directly into the text box provided on the right side of the webtool interface. Upon submission, the webtool will generate multiple barplots depicting enriched pathways. Feel free to explore the results by clicking around the plots. To compare these results with those generated in R, navigate to the `Cell Types` tab at the top and look for `Tabula Muris`.
@@ -130,7 +130,7 @@ The other parameters for the function include:
 
 ```R
 # Read in the epithelial de df we generated previously
-de_gsea_df <- read.csv('outdir_single_cell_rna/epithelial_de_gsea.tsv', sep = '\t')
+de_gsea_df <- read.csv('epithelial_de_gsea.tsv', sep = '\t')
 
 # Get all the foldchange values from the original dataframe
 
@@ -205,7 +205,7 @@ As an additional exercise, let's conduct an overrepresentation and/or GSEA analy
 
 ```R
 download.file(url = 'http://genomedata.org/cri-workshop/reference_files/cd8tcells_de_gsea.tsv',
-              destfile = 'outdir_single_cell_rna/cd8tcells_de_gsea.tsv')
+              destfile = 'cd8tcells_de_gsea.tsv')
 ```
 
 Hint:
