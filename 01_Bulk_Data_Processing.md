@@ -666,7 +666,7 @@ cp /project/biocompworkshop/Data_Vault/R_Scripts/*.Rmd .
 ```bash
 module use /project/biocompworkshop/software/modules
 module load r/4.4.0-biocomp
- module load rstudio/2023.9.0
+module load rstudio/2023.9.0
 ```
 To use the R library containing the various R packages you will need to call the following from the R Console (within RStudio) and/or at the top of your R scripts:
 
