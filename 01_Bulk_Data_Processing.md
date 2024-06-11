@@ -652,8 +652,32 @@ Terminate All Jobs for a Specific User:
 ```bash
 scancel -u rshukla
 ```
+### Additional files required for the workshop
 
+```bash
+echo $myHOME
+cd $myHOME
 
+cp /project/biocompworkshop/Data_Vault/R_Scripts/*.Rmd .
+```
+
+### Starting R session for the workshop
+
+```bash
+module use /project/biocompworkshop/software/modules
+module load r/4.4.0-biocomp
+```
+To use the R library containing the various R packages you will need to call the following from the R Console (within RStudio) and/or at the top of your R scripts:
+
+```R
+.libPaths(c('/project/biocompworkshop/software/r/libraries/4.4.0', '/apps/u/spack/gcc/12.2.0/r/4.4.0-7i7afpk/rlib/R/library'))
+```
+
+Confirm the library path:
+
+```R
+.libPaths()
+```
 
 
 
