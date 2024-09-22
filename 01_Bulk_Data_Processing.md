@@ -85,6 +85,7 @@ module load bedops/2.4.40
 module load kentutils/1.04.0
 module load subread/2.0.6
 module use /project/genomicdatasci/software/modules
+module avail
 ```
 
 #### Introduction to Inputs
