@@ -18,7 +18,7 @@ Before starting, we will set up the file system required for smooth processing a
 
 Here, we will create directories for storing input and output files and create shortcuts for easy access. Additionally, we will upload all the necessary programs for analysis.
 
-In the Classroom Folder: `cd /project/biocompworkshop`  
+In the Classroom Folder: `cd /project/genomicdatasci`  
 Navigate to the folder with your name; this is your home folder.  
 Example command: `cd <your-folder>`
 
@@ -46,10 +46,10 @@ mkdir scRNASeq_Results
 
 #### Requesting an Interactive Session 
 
-Now we will request an interactive session on the SLURM cluster under the biocompworkshop account. The session will last for up to 4 hours, use the teton partition, and request 4 CPU cores. Once the resources are allocated, you will get an interactive shell prompt on one of the compute nodes where you can run your commands interactively.
+Now we will request an interactive session on the SLURM cluster under the genomicdatasci account. The session will last for up to 4 hours, use the teton partition, and request 4 CPU cores. Once the resources are allocated, you will get an interactive shell prompt on one of the compute nodes where you can run your commands interactively.
 
 ```bash
-salloc --account=biocompworkshop --time=2:00:00 --reservation=biocompworkshop -c 4
+salloc --account=genomicdatasci --time=4:00:00 --mem=32G --cpus-per-task=8
 ```
 
 #### Create path shortcuts 
@@ -57,14 +57,14 @@ salloc --account=biocompworkshop --time=2:00:00 --reservation=biocompworkshop -c
 We will now create environment variables, which are useful for storing paths, configuration options, and other values you might need to reference multiple times in your scripts or commands. Using environment variables makes your scripts more flexible and easier to maintain.
 
 ```bash
-export myHOME=/project/biocompworkshop/rshukla 
-export FASTQ=/project/biocompworkshop/rshukla/FastQ
-export FASTQC=/project/biocompworkshop/rshukla/FastQC
-export REFERENCE=/project/biocompworkshop/rshukla/Grch38/fasta
-export GTF=/project/biocompworkshop/rshukla/Grch38/genes
-export INDEX=/project/biocompworkshop/rshukla/Grch38/Hisat2
-export BAM_P=/project/biocompworkshop/rshukla/BAMFiles_Paired
-export COUNTS=/project/biocompworkshop/rshukla/Counts
+export myHOME=/project/genomicdatasci/rshukla 
+export FASTQ=/project/genomicdatasci/rshukla/FastQ
+export FASTQC=/project/genomicdatasci/rshukla/FastQC
+export REFERENCE=/project/genomicdatasci/rshukla/Grch38/fasta
+export GTF=/project/genomicdatasci/rshukla/Grch38/genes
+export INDEX=/project/genomicdatasci/rshukla/Grch38/Hisat2
+export BAM_P=/project/genomicdatasci/rshukla/BAMFiles_Paired
+export COUNTS=/project/genomicdatasci/rshukla/Counts
 ```
 Following the creation of path shortcuts, you can now navigate to the FastQ folder (where we will download our raw data) using `cd $FASTQ`, and then return to your home folder using `cd $myHOME`.
 
@@ -83,7 +83,7 @@ module load openjdk/11.0.15_10
 module load picard/2.26.2
 module load bedops/2.4.40
 module load kentutils/1.04.0
-module use /project/biocompworkshop/software/modules
+module use /project/genomicdatasci/software/modules
 module load subread/2.0.6
 ```
 
@@ -474,10 +474,10 @@ You can use the following script by pasting it into any text editor (vi or nano)
 ```bash
 #!/bin/bash
 
-idx_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/chr22"
-splice_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/splicesites.tsv"
-SRC_DIR="/project/biocompworkshop/rshukla/FastQ"
-out_dir="/project/biocompworkshop/rshukla/PP_Results"
+idx_dir="/project/genomicdatasci/rshukla/Grch38/Hisat2/chr22"
+splice_dir="/project/genomicdatasci/rshukla/Grch38/Hisat2/splicesites.tsv"
+SRC_DIR="/project/genomicdatasci/rshukla/FastQ"
+out_dir="/project/genomicdatasci/rshukla/PP_Results"
 
 cd $SRC_DIR
 
@@ -501,10 +501,10 @@ Here's a brief breakdown of what each part of the script does:
 1. **Shebang and Variable Initialization:**
    ```bash
    #!/bin/bash
-   idx_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/chr22"
-   splice_dir="/project/biocompworkshop/rshukla/Grch38/Hisat2/splicesites.tsv"
-   SRC_DIR="/project/biocompworkshop/rshukla/FastQ"
-   out_dir="/project/biocompworkshop/rshukla/PP_Results"
+   idx_dir="/project/genomicdatasci/rshukla/Grch38/Hisat2/chr22"
+   splice_dir="/project/genomicdatasci/rshukla/Grch38/Hisat2/splicesites.tsv"
+   SRC_DIR="/project/genomicdatasci/rshukla/FastQ"
+   out_dir="/project/genomicdatasci/rshukla/PP_Results"
    ```
    - The script starts with the shebang (`#!/bin/bash`), indicating that it should be run in the Bash shell.
    - It initializes several variables for directories: the index directory (`idx_dir`), splice site file (`splice_dir`), source directory containing FASTQ files (`SRC_DIR`), and output directory (`out_dir`).
@@ -569,7 +569,7 @@ To execute the `hisat2_cmd.bash` script, we will first copy it from `Data_Vault`
 echo $myHOME
 cd $myHOME
 
-cp /project/biocompworkshop/Data_Vault/hisat2_cmd.bash .
+cp /project/genomicdatasci/Data_Vault/hisat2_cmd.bash .
 
 ls
 
@@ -581,7 +581,7 @@ Below I have given the Slurm batch script designed to run commands listed in a f
 ```bash
 #!/bin/bash
 #SBATCH --job-name=hisat2-cmd
-#SBATCH --account=biocompworkshop
+#SBATCH --account=genomicdatasci
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=6
@@ -593,12 +593,12 @@ module load hisat2/2.2.1
 module load samtools/1.16.1
 module load parallel/20220522
 
-srun parallel --jobs 8 < /project/biocompworkshop/Data_Vault/cmd.list
+srun parallel --jobs 8 < /project/genomicdatasci/Data_Vault/cmd.list
 ```
 The script does the following:
 - Allocates resources on an HPC cluster (2 nodes, 4 tasks per node, 6 CPUs per task).
 - Loads the necessary software modules required for the tasks.
-- Uses GNU Parallel to execute commands listed in /project/biocompworkshop/Data_Vault/cmd.list concurrently, with up to 8 commands running at the same time.
+- Uses GNU Parallel to execute commands listed in /project/genomicdatasci/Data_Vault/cmd.list concurrently, with up to 8 commands running at the same time.
 
 ### Execute the script
 
@@ -608,7 +608,7 @@ To execute the `ParallelProcessing.sh` script, we will first copy it from `Data_
 echo $myHOME
 cd $myHOME
 
-cp /project/biocompworkshop/Data_Vault/ParallelProcessing.sh .
+cp /project/genomicdatasci/Data_Vault/ParallelProcessing.sh .
 
 ls
 
@@ -658,20 +658,20 @@ scancel -u rshukla
 echo $myHOME
 cd $myHOME
 
-cp /project/biocompworkshop/Data_Vault/R_Scripts/*.Rmd .
+cp /project/genomicdatasci/Data_Vault/R_Scripts/*.Rmd .
 ```
 
 ### Starting R session for the workshop
 
 ```bash
-module use /project/biocompworkshop/software/modules
+module use /project/genomicdatasci/software/modules
 module load r/4.4.0-biocomp
 module load rstudio/2023.9.0
 ```
 To use the R library containing the various R packages you will need to call the following from the R Console (within RStudio) and/or at the top of your R scripts:
 
 ```R
-.libPaths(c('/project/biocompworkshop/software/r/libraries/4.4.0', '/apps/u/spack/gcc/12.2.0/r/4.4.0-7i7afpk/rlib/R/library'))
+.libPaths(c('/project/genomicdatasci/software/r/libraries/4.4.0', '/apps/u/spack/gcc/12.2.0/r/4.4.0-7i7afpk/rlib/R/library'))
 ```
 
 Confirm the library path:
