@@ -57,14 +57,14 @@ salloc --account=biocompworkshop --time=2:00:00 --reservation=biocompworkshop -c
 We will now create environment variables, which are useful for storing paths, configuration options, and other values you might need to reference multiple times in your scripts or commands. Using environment variables makes your scripts more flexible and easier to maintain.
 
 ```bash
-export myHOME=/project/biocompworkshop/rshukla 
-export FASTQ=/project/biocompworkshop/rshukla/FastQ
-export FASTQC=/project/biocompworkshop/rshukla/FastQC
-export REFERENCE=/project/biocompworkshop/rshukla/Grch38/fasta
-export GTF=/project/biocompworkshop/rshukla/Grch38/genes
-export INDEX=/project/biocompworkshop/rshukla/Grch38/Hisat2
-export BAM_P=/project/biocompworkshop/rshukla/BAMFiles_Paired
-export COUNTS=/project/biocompworkshop/rshukla/Counts
+export myHOME=/project/genomicdatasci/rshukla 
+export FASTQ=/project/genomicdatasci/rshukla/FastQ
+export FASTQC=/project/genomicdatasci/rshukla/FastQC
+export REFERENCE=/project/genomicdatasci/rshukla/Grch38/fasta
+export GTF=/project/genomicdatasci/rshukla/Grch38/genes
+export INDEX=/project/genomicdatasci/rshukla/Grch38/Hisat2
+export BAM_P=/project/genomicdatasci/rshukla/BAMFiles_Paired
+export COUNTS=/project/genomicdatasci/rshukla/Counts
 ```
 Following the creation of path shortcuts, you can now navigate to the FastQ folder (where we will download our raw data) using `cd $FASTQ`, and then return to your home folder using `cd $myHOME`.
 
