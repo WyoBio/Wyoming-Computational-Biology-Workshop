@@ -74,15 +74,15 @@ We will be using several Linux-based tools in this section. You can load these t
 
 ```bash
 module load arcc/1.0
-module load gcc/12.2.0
+module load gcc/14.2.0
 module use /project/genomicdatasci/software/modules
-module load samtools/1.16.1
+module load samtools/1.20
 module load hisat2/2.2.1
-module load fastqc/0.11.9
-module load multiqc/1.13
-module load openjdk/11.0.15_10
-module load picard/2.26.2
-module load bedops/2.4.40
+module load fastqc/0.12.1
+module load multiqc/1.24.1
+module load openjdk/17.0.8.1_1
+module load picard/3.2.0
+module load bedops/2.4.41
 module load kentutils/1.04.0
 module load subread/2.0.6
 module avail
@@ -591,7 +591,7 @@ Below I have given the Slurm batch script designed to run commands listed in a f
 module load arcc/1.0  
 module load gcc/12.2.0
 module load hisat2/2.2.1
-module load samtools/1.16.1
+module load samtools/1.20
 module load parallel/20220522
 
 srun parallel --jobs 8 < /project/genomicdatasci/Data_Vault/cmd.list
