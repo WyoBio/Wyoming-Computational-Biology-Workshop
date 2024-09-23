@@ -587,14 +587,14 @@ Below I have given the Slurm batch script designed to run commands listed in a f
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=6
 #SBATCH --time=01:00:00
- 
-module load arcc/1.0  
-module load gcc/12.2.0
-module load hisat2/2.2.1
+
+module load arcc/1.0
+module load gcc/14.2.0
 module load samtools/1.20
+module load hisat2/2.2.1
 module load parallel/20220522
 
-srun parallel --jobs 8 < /project/genomicdatasci/Data_Vault/cmd.list
+srun parallel --jobs 8 < /project/genomicdatasci/rshukla/cmd.list
 ```
 The script does the following:
 - Allocates resources on an HPC cluster (2 nodes, 4 tasks per node, 6 CPUs per task).
@@ -609,7 +609,7 @@ To execute the `ParallelProcessing.sh` script, we will first copy it from `Data_
 echo $myHOME
 cd $myHOME
 
-cp /project/genomicdatasci/Data_Vault/ParallelProcessing.sh .
+cp /project/genomicdatasci/rshukla/ParallelProcessing.sh .
 
 ls
 
